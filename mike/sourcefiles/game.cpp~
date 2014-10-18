@@ -39,6 +39,7 @@ cout<<"printing the game board\n";
       bluePlayer>>data;
       positions[pos]=data;
    }
+   player blue;
    bluePlayer.close();
    game1.set_up(positions);
    game1.print_board();

@@ -53,8 +53,6 @@ int x=0;
    
 
    game1.make_move(a,b,c,x);
-   red.print_playerPeices();
-   blue.print_playerPeices();
    game1.print_board();
    }
    return 0;

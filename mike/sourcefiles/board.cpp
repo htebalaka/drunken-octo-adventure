@@ -20,8 +20,6 @@ board::board()
          space[pos][cur] = new peice;
          space[pos][cur]->rank='E';
          space[pos][cur]->color='E';
-         space[pos][cur]->row=pos;
-         space[pos][cur]->column=cur;
       }
    }
    for (int row=4;row<6;row++){
@@ -47,7 +45,8 @@ void board::set_up(char startPositions[])
       for (int pos=1;pos<numberOfPeices+1;pos++){
          space[r][c]->rank=startPositions[pos];
          space[r][c]->color='B';
-         blue.place_peice(space[r][c],startPositions[pos],'B',pos);
+         blue.place_peice(space[r][c],startPositions[pos],'B',pos-1);
+blue.print_peice(pos-1);
          c++;
          if(c==boardSize){
             c=0;
@@ -59,7 +58,8 @@ void board::set_up(char startPositions[])
       for (int pos=1;pos<numberOfPeices+1;pos++){
          space[r][c]->rank=startPositions[pos];
          space[r][c]->color='R';
-         red.place_peice(space[r][c],startPositions[pos],'R',pos);
+         red.place_peice(space[r][c],startPositions[pos],'R',pos-1);
+red.print_peice(pos-1);
          c++;
          if(c==boardSize){
             c=0;
@@ -87,10 +87,10 @@ void board::possible_moves(peice){}   // indicate to the user what the possible 
 *                    post-condition: returns if the move is allowed by game rules
 **********************************************************************************************/
 
-bool board::is_valid(peice* current,int r,int c)
+bool board::is_valid(int rN,int cN,int r,int c)
 {
-   if ((current->rank=='L')||(space[r][c]->rank=='L'))return false;
-   switch(current->rank){ 
+   if ((space[rN][cN]->rank=='L')||(space[r][c]->rank=='L'))return false;
+   switch(space[r][c]->rank){ 
       case '0':
       case '1':
       case '2':
@@ -102,31 +102,31 @@ bool board::is_valid(peice* current,int r,int c)
       case '8':
       case '9':
            
-            if ((abs(current->row-r)+abs(current->column-c)==1)&&(current->color!=space[r][c]->color))
+            if ((abs(rN-r)+abs(cN-c)==1)&&(space[rN][cN]->color!=space[r][c]->color))
                return true;
             else
               return false;
          break;
       case 'S':
-            if(((current->row==r)||(current->column==c))&&(space[r][c]->color=='E')){
+            if(((rN==r)||(cN==c))&&(space[rN][cN]->color=='E')){
             //  if there is anything between the scout and it's destination the move is invalid
-               if (current->row-r<0)
-                  for (int pos=current->row+1;pos<r;pos++){
+               if (r-rN<0)
+                  for (int pos=r+1;pos<rN;pos++){
                      if(space[pos][c]->rank!='E')
                         return false;
                   }
-               else if (current->row-r>0)
-                  for(int pos=r-1;pos>current->row;pos--){
+               else if (r-rN>0)
+                  for(int pos=r-1;pos>rN;pos--){
                      if(space[pos][c]->rank!='E')
                         return false;
                   }
-              if (current->column-c<0)
-                  for (int pos=current->column+1;pos<c;pos++){
+              if (cN-c<0)
+                  for (int pos=cN+1;pos<c;pos++){
                      if(space[r][pos]->rank!='E')
                         return false;
                   }
-               else if (current->column-c>0)
-                  for(int pos=c-1;pos>current->column;pos--){
+               else if (cN-c>0)
+                  for(int pos=c-1;pos>cN;pos--){
                      if(space[r][pos]->rank!='E')
                         return false;
                   }
@@ -134,7 +134,7 @@ bool board::is_valid(peice* current,int r,int c)
                   return true;
 
              }
-             else if((abs(current->row-r)+abs(current->column-c)==1)&&(current->color!=space[r][c]->color))
+             else if((abs(r-rN)+abs(c-cN)==1)&&(space[rN][cN]->color!=space[r][c]->color))
                 return true;
              else 
                 return false;
@@ -158,15 +158,25 @@ bool board::is_valid(peice* current,int r,int c)
                   
 void board::make_move(int r ,int c,int rN,int cN)
 {
-   if (is_valid(space[r][c],rN,cN)){
-      space[rN][cN]->rank=space[r][c]->rank;
-      space[rN][cN]->color=space[r][c]->color;
-      space[r][c]->color='E';
-      space[r][c]->rank='E';
-      update_side(space[rN][cN]);      
+   if (is_valid(rN,cN,r,c)){
+      swap(space[r][c],space[rN][cN]);
+      //update_side(space[rN][cN]);      
    } else cout<<"move is invalid\n";
+red.print_playerPeices();
+blue.print_playerPeices();
 }  
 
+/*******************************************************************************************
+*                    swap implementation
+*                   pre-condition: two peice * are sent to method
+*                   post condition: the two peices are switched with each other
+*******************************************************************************************/
+void board::swap(peice * &x,peice * &y)
+{
+   peice * temp=x;
+   x=y;
+   y=temp;
+}
 /*******************************************************************************************
 *                      print board implementation
 *               pre-condition: board needs to be declared
@@ -185,8 +195,9 @@ void board::print_board()
 }  //  print out the board to the screen
 void board::print_space(int r,int c)
 {
-    cout<<"space["<<r<<"]["<<c<<"]->row:"<<space[r][c]->row<<endl;
-       cout<<"space["<<r<<"]["<<c<<"]->column:"<<space[r][c]->column<<endl;
+    cout<<"space["<<r<<"]["<<c<<"]->color:"<<space[r][c]->color;
+   cout<<"space["<<r<<"]["<<c<<"}->peiceNumber"<<space[r][c]->peiceNumber;
+       cout<<"space["<<r<<"]["<<c<<"]->rank:"<<space[r][c]->rank<<endl;
 
 }
 

@@ -29,14 +29,23 @@ bool player::strike(){return false;}  // returns who won the strike between two 
 
 void player::place_peice(peice * current,char R ,char C,int pos)
 {
+   
    current->rank=R;
    current->color=C; 
    current->peiceNumber=pos;
-   playerPeices[pos]=current; 
+   playerPeices[pos]=current;
+print_peice(pos);
+
 }
 
+void player::print_peice(int pos)
+{
+cout<<"current->color:"<<playerPeices[pos]->color;
+cout<<" current->peiceNumber:"<<playerPeices[pos]->peiceNumber;
+cout<<" current->rank:"<<playerPeices[pos]->rank<<endl;
+}
 /********************************************************************************
-*      update method implementation
+*                       update method implementation
 *                       pre-condition: a peice for a side has been changed somehow
 *                       post-condition: the playerPeices array has been updated
 **********************************************************************************/
@@ -50,7 +59,7 @@ void player::update(peice * current)
 void player::print_playerPeices()
 {
    for (int pos=0;pos<40;pos++){
-      cout<<"color:"<<playerPeices[pos]->color<<" rank:"<<playerPeices[pos]->rank<<" row"<<playerPeices[pos]->row
-          <<" column:"<<playerPeices[pos]->column<<" peiceNumber:"<<playerPeices[pos]->playerPeice->peiceNumber<<endl;
+cout<<"pos:"<<pos<<" ";
+print_peice(pos);
    }
 }
