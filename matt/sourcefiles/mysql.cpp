@@ -1,26 +1,42 @@
+#include "../headers/globalConstants.h"
+#include "../headers/mysql.h"
+#include <string>
+#include <cstdio>
+#include <stdlib.h>
+using namespace std;
+
+
 string pull_Board(int gameId){
-	string query="SELECT board FROM Board WHERE game_id=\""+gameId+"\"";
+	char game[10];
+	sprintf(game,"%d",gameId);
+	string query="SELECT board FROM Board WHERE game_id=" + string(game) + "";
 	string results = query_results(query);
 	
 }
 
 int create_Board(string board, int playerId){//creates board, returns board ID - HOST ONLY
-	string query = "INSERT INTO Board(board,player_a) OUTPUT INSERTED.id VALUES ("+board+","+playerID+")";
+	char player[10];
+	sprintf(player,"%d",playerId);
+	string query = "INSERT INTO Board(board,player_a) OUTPUT INSERTED.id VALUES (" + board + "," + string(player) + ")";
 	string results = query_results(query);
 	if(results != ""){//it went through!
-	 return results;
-}
-		
+	 return atoi(results.c_str());
+	}
+}		
 int create_Player(string name){//creates Player, returns ID
-	string query = "INSERT INTO players(name) OUTPUT INSERTED.id VALUES ("+name+")";
+	string query = "INSERT INTO players(name) OUTPUT INSERTED.id VALUES (" + name + ")";
 	string results = query_results(query);
 	if(results != ""){
-		return results;
+		return atoi(results.c_str());
 	}
 }
 
-bool add_Player(int playerID, int boardID){//adds player 2 to game - PLAYER 2 ONLY
-	string query = "UPDATE Board SET player_b="+playerID+" WHERE id="+boardID;
+bool add_Player(int playerId, int boardId){//adds player 2 to game - PLAYER 2 ONLY
+	char board[10];
+	sprintf(board,"%d",boardId);
+	char player[10];
+	sprintf(player,"%d",playerId);
+	string query = "UPDATE Board SET player_b="+ string(player) +" WHERE id=" + string(board) + "";
 	string results = query_results(query);
 	if(results == ""){
 		return true;
@@ -32,7 +48,7 @@ bool add_Player(int playerID, int boardID){//adds player 2 to game - PLAYER 2 ON
 
 
 string query_results(string query){
-	string action = connects+query+"'";
+	string action = connect+query+"'";
 	string output = getCmdOutput(action.c_str());
 	return output;
 }
