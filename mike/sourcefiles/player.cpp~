@@ -34,7 +34,6 @@ void player::place_peice(peice * current,char R ,char C,int pos)
    current->color=C; 
    current->peiceNumber=pos;
    playerPeices[pos]=current;
-print_peice(pos);
 
 }
 
@@ -43,6 +42,17 @@ void player::print_peice(int pos)
 cout<<"current->color:"<<playerPeices[pos]->color;
 cout<<" current->peiceNumber:"<<playerPeices[pos]->peiceNumber;
 cout<<" current->rank:"<<playerPeices[pos]->rank<<endl;
+}
+
+/********************************************************************************
+*                       remove method implementation
+*                       pre-condition: a peice lost a challenge
+*                       post-condition: the peice has been removed from the array
+**********************************************************************************/
+
+void player::remove(int pos)
+{
+   playerPeices[pos]=NULL;
 }
 /********************************************************************************
 *                       update method implementation

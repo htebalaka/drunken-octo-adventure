@@ -48,13 +48,11 @@ int x=0;
       int a,b,c;
       cout<<"enter the coordinates for your peice:";
       cin>>a>>b;
-      cout<<"enter the coordinates of where you wnat it moved:";
+      cout<<"enter the coordinates of where you want it moved:";
       cin>>c>>x;
    
 
    game1.make_move(a,b,c,x);
-   red.print_playerPeices();
-   blue.print_playerPeices();
    game1.print_board();
    }
    return 0;

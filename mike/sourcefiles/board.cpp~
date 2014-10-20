@@ -159,15 +159,49 @@ bool board::is_valid(int rN,int cN,int r,int c)
 void board::make_move(int r ,int c,int rN,int cN)
 {
    if (is_valid(rN,cN,r,c)){
-      swap(space[r][c],space[rN][cN]);
-red.print_playerPeices();
-blue.print_playerPeices();
-      //update_side(space[rN][cN]);      
+      if (space[rN][cN]->color=='E')
+         swap(space[r][c],space[rN][cN]);
+      else strike(space[r][c],space[rN][cN]);   // if the space is not empty call strike method
    } else cout<<"move is invalid\n";
-red.print_playerPeices();
-blue.print_playerPeices();
 }  
 
+/*******************************************************************************************
+*                    strike implementation
+*                   pre-condition: two peice * are sent to method
+*                   post condition: the higher ranking peice is removed from board
+*******************************************************************************************/
+
+void board::strike(peice * challenger,peice * opponent)
+{
+   switch (challenger->rank){
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+         if(challenger->rank>opponent->rank){
+            remove_peice(opponent);
+            swap(opponent,challenger);
+            
+         }
+         else if (challenger->rank==opponent->rank){
+            remove_peice(opponent);
+            remove_peice(challenger);
+         } else
+            remove_peice(challenger);
+      }
+}
+
+void board::remove_peice(peice * victom)
+{
+   victom->rank='E';
+   victom->color='E';
+   
+}
 /*******************************************************************************************
 *                    swap implementation
 *                   pre-condition: two peice * are sent to method

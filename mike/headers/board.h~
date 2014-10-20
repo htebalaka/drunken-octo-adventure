@@ -24,12 +24,15 @@ class board{
       void print_board();    //  print the board as it stands
       void make_move(int, int, int, int);  // move a peice from on space to another according to how it behaves
       void print_space(int r,int c);
+      void strike(peice *, peice *);
+
    private:
 
       peice * space[boardSize][boardSize];
       player red, blue;
       void update_side(peice *); 
-      void swap(peice *,peice *);
+      void swap(peice *&,peice *&);
+      void remove_peice(peice *);
 };    
 
 #endif

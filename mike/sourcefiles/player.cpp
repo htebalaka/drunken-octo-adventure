@@ -43,6 +43,16 @@ cout<<"current->color:"<<playerPeices[pos]->color;
 cout<<" current->peiceNumber:"<<playerPeices[pos]->peiceNumber;
 cout<<" current->rank:"<<playerPeices[pos]->rank<<endl;
 }
+
+/********************************************************************************
+*                       remove method implementation
+*                       pre-condition: a peice lost a challenge
+*                       post-condition: the peice has been removed from the array
+**********************************************************************************/
+
+void player::remove(int pos)
+{
+}
 /********************************************************************************
 *                       update method implementation
 *                       pre-condition: a peice for a side has been changed somehow
