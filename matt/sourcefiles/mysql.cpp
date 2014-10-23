@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdio>
 #include <stdlib.h>
+#include <iostream>
 using namespace std;
 
 
@@ -17,15 +18,18 @@ string pull_Board(int gameId){
 int create_Board(string board, int playerId){//creates board, returns board ID - HOST ONLY
 	char player[10];
 	sprintf(player,"%d",playerId);
-	string query = "INSERT INTO Board(board,player_a) OUTPUT INSERTED.id VALUES (" + board + "," + string(player) + ")";
+	string query = "INSERT INTO Board (board,player_a) VALUES ('" + board + "','" + string(player) + "');";
+	query += "\nSELECT LAST_INSERT_ID();";
 	string results = query_results(query);
 	if(results != ""){//it went through!
 	 return atoi(results.c_str());
 	}
 }		
 int create_Player(string name){//creates Player, returns ID
-	string query = "INSERT INTO players(name) OUTPUT INSERTED.id VALUES (" + name + ")";
+	string query = "INSERT INTO players (name) VALUES ('" + name + "');";
+	query += "\nSELECT LAST_INSERT_ID();";
 	string results = query_results(query);
+	cout << "RESULTS: " << endl << results << endl;
 	if(results != ""){
 		return atoi(results.c_str());
 	}
@@ -48,7 +52,8 @@ bool add_Player(int playerId, int boardId){//adds player 2 to game - PLAYER 2 ON
 
 
 string query_results(string query){
-	string action = connect+query+"'";
+	string action = connect+query+"";
+	cout << action << endl;
 	string output = getCmdOutput(action.c_str());
 	return output;
 }

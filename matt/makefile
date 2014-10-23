@@ -1,5 +1,5 @@
-all: objects/mysql.o
+all: sourcefiles/server.cpp sourcefiles/games.cpp headers/sockets.h sourcefiles/menu.cpp
+	g++ sourcefiles/server.cpp sourcefiles/games.cpp sourcefiles/menu.cpp -o bin/menu
 	@echo "DONE"
 
-objects/mysql.o: headers/globalConstants.h sourcefiles/mysql.cpp
-	g++ -c sourcefiles/mysql.cpp -o objects/mysql.o
+

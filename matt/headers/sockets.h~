@@ -1,0 +1,26 @@
+struct gameInfo{
+	string name;
+	int sock;
+	string address;
+	string hostname;
+};
+
+class tcp{
+	private:
+		const int defaultPorts[] = {4000,4001,4002,4003,4004,4005,4006,4007,4008,4009,4010};
+		struct sockaddr_in server;
+		int port;
+		int sock;
+		string address;
+		int get_Port(){
+			int choose = rand() % 5;
+			int port = defaultPorts[choose];
+			return port;
+		}
+	public:
+		tcp();
+		bool conn(string address, int port);
+}
+
+		
+		

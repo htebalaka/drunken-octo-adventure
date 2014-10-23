@@ -1,0 +1,50 @@
+#include<iostream>
+#include<fstream>
+#include<sstream>
+#include<string>
+#include"../headers/sockets.h"
+using namespace std;
+
+curr_games get_Game(){
+	string line;
+	ifstream gamefile("connections.txt");
+	int numGames = 0;
+	if(gamefile.is_open()){
+		while(!gamefile.eof()){
+			getline(gamefile,line);
+			numGames++;
+		}
+		gamefile.close();
+	}
+	curr_games * games = new curr_games[numGames];
+	int select = 0;
+	ifstream gamedata("connections.txt");
+	if(gamedata.is_open()){
+		while(!gamedata.eof()){
+			getline(gamedata,line);
+			istringstream iss(line);
+			string word;
+			iss >> games[select].sock;
+			iss >> games[select].address;
+			iss >> games[select].hostname;
+			iss >> games[select].name;
+			select++;
+		}
+	}
+	gamefile.close();
+	cout << "Availible Games:\n";
+	cout << "Games:" << numGames << endl;
+	for(int i=0;i < (numGames-1);i++){
+		cout << i << " : " << games[i].name << endl;
+	}
+	cout << "Enter Game: ";
+	int dGame;
+	do{
+	cin >> dGame;
+	if((dGame < 0) || (dGame > (numGames-2))){
+		cout << "**ERROR Invalid Game Selection!\nPlease Enter Game: ";
+	}
+	}while((dGame < 0) || (dGame > (numGames-1)));
+	return games[dGame];
+}	
+				
