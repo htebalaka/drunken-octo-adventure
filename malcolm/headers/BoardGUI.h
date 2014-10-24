@@ -6,6 +6,7 @@
 #include <panel.h>
 #include <iostream>
 #include <functional>
+#include <vector>
 
 #define HEIGHT 21
 #define WIDTH 51
@@ -47,11 +48,21 @@ class BoardGUI
          else { b_mvaddch(y, x, ch | color); }
       }
 
-      // moves the cursor up, left, right, or down, ensuring it remains in
-      // the region specified by the predicate function. returns 1 if the
+
+      // moves the cursor up/left/right/down, while "holding" the character
+      // topCh, displaying topCh instead of the bottomCh hidden underneath.
+      // when moving the character that is being hidden is replaced back with
+      // bottomCh. ensures that the user cannot move outside of the bounds
+      // specified by the movementPredicate. assumes the direction is a
+      // movement key.
+      void move_cursor(chtype direction, chtype& bottomCh, chtype topCh,
+         function<bool (int,int)> movementPredicate);
+
+      // moves the cursor up/left/right/down, ensuring it remains in the
+      // region specified by the predicate function. returns true if the
       // cursor was successfully moved, 0 otherwise. asserts that the
-      // chtype is a movement key.
-      bool moveCursor(chtype direction, std::function<bool (int, int)> bounds);
+      // direction is a movement key.
+      bool move_cursor(chtype direction, std::function<bool (int, int)> bounds);
 
       // attempts to pickup the character under the cursor, allowing the
       // user to move it around and place it in a new location. takes
@@ -73,12 +84,14 @@ class BoardGUI
    public:
       BoardGUI(int starty, int startx);
 
+      void new_game(bool isBottomPlayer);
+
       // loops through the game board array to draw an up to date GUI
       void refreshBoard() { b_refresh(); }
       // gives control of the board to the user
       void giveControl();
       // allows the player to place all of their pieces at the start
-      void newGame(bool bottomPlayer);
+      std::vector<char> newGame(bool bottomPlayer);
       // clears the board
       void emptyGrid();
 };
