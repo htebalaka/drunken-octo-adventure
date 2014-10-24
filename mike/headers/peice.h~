@@ -13,5 +13,6 @@ struct peice{
          char rank;
          int row;
          int column;
+         int peiceNumber;
       };
 #endif
