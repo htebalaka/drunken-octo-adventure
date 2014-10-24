@@ -3,6 +3,7 @@
 #include <panel.h>
 #include <iostream>
 #include <functional>
+#include <vector>
 
 #include "../headers/BoardGUI_hof.h"
 #include "../headers/BoardGUI.h"
@@ -14,9 +15,6 @@
 int victory() { return rand() % 2; }
 int moveIsValid() { return rand() % 2; }
 
-// returns true if the bounds are valid
-bool hof_strategoBounds(int y, int x) { return y>=0 and y<10 and x>=0 and x<10; }
-
 void BoardGUI::giveControl()
 {
    int ch;
@@ -25,14 +23,14 @@ void BoardGUI::giveControl()
       switch(ch)
       {
          case 'i': case 'j': case 'l': case 'k':
-            moveCursor(ch, hof_strategoBounds);
+            move_cursor(ch, boundsCheck(REG_GAME));
             break;
          case 'u':
             moveCharacter(
-                  std::function<bool (int,int)>([](int y,int x) { return true; }),
-                  hof_strategoBounds,
-                  std::function<bool (int,int)>([](int y,int x) { return true; }),
-                  std::function<void (int,int,int,int)>([](int toY, int toX, int fromY, int fromX) {return;}));
+                  std::function<bool (int,int)>([](int y,int x) { return true; }), // can pickup
+                  boundsCheck(REG_GAME),
+                  std::function<bool (int,int)>([](int y,int x) { return true; }), // can place
+                  std::function<void (int,int,int,int)>([](int toY, int toX, int fromY, int fromX) {return;})); // update
             break;
          case 'q':
             endwin();
@@ -42,6 +40,67 @@ void BoardGUI::giveControl()
    }
 }
 
+
+
+void BoardGUI::new_game(bool isBottomPlayer)
+{
+   // initialize a 4x10 board with empty characters
+   vector< vector<char> > startRegion (4, vector<char> (10, ' '));
+   vector<chtype> pieces {'1','1','1','1','2','2','2','2','3','3','3','3','4','4','4','4','5','5','5','5','6','6','6','6','7','7','7','7','8','8','8','8','9','9','9','9','0','0','0','0'};
+
+   chtype bottomCh = b_inch(cursorY, cursorX);
+   int index = 0;
+   chtype ch;
+   while ((ch=getch()) and index < pieces.size())
+   {
+      // find the y index of the cursor relative to the region, 6 is the
+      // index where the bottom region begins, otherwise it is 0. this is
+      // useful for a number of the cases
+      int regionY = cursorY - ((isBottomPlayer) ? 6 : 0);
+      // find the piece that is currently selected, so that we can have the
+      // piece move with the cursor, will need to convert from piece adt
+      chtype topCh = pieces[index];
+
+      switch(ch)
+      {
+         case 'j': case 'i': case 'l': case 'k':
+            move_cursor(ch, bottomCh, topCh, boundsCheck(
+                     (isBottomPlayer) ? NEWGAME_BOTTOM : NEWGAME_TOP));
+            break;
+         case 'u':
+            if (startRegion[regionY][cursorX] != ' ')
+            {
+               // if a piece is already placed we swap it with the current
+               // piece
+               chtype tmp = startRegion[regionY][cursorX];
+               startRegion[regionY][cursorX] = pieces[index];
+               pieces[index] = tmp;
+
+               bottomCh = startRegion[regionY][cursorX];
+               topCh = pieces[index];
+               b_mvaddch(cursorY, cursorX, topCh);
+               b_refresh();
+            }
+            else
+            {
+               // if a piece is not already placed we place it and increment
+               // the index to point to the next piece to place
+               startRegion[regionY][cursorX] = pieces[index];
+               ++index;
+
+               bottomCh = startRegion[regionY][cursorX];
+               b_refresh();
+            }
+            break;
+         case 'q':
+            endwin();
+            std::exit(1);
+            break;
+      }
+   }
+   // this will need to return the startRegion vector when it comes to
+   // interfacing with the game logic portion of code
+}
 
 void BoardGUI::moveCharacter(
       std::function<bool (int,int)> canPickup,
@@ -75,18 +134,8 @@ void BoardGUI::moveCharacter(
       switch(ch)
       {
          case 'j': case 'k': case 'l': case 'i':
-            {
-               int tmpY = cursorY;
-               int tmpX = cursorX;
-               if (moveCursor(ch, canMove))
-               {
-                  b_mvaddch(tmpY, tmpX, bottomCh); // restore old bottomCh
-                  bottomCh = b_inch(cursorY, cursorX); // set new bottomCh
-                  b_mvaddch(cursorY, cursorX, topCh); // overwrite with topCh
-               }
-               b_refresh();
-               break;
-            }
+            move_cursor(ch, bottomCh, topCh, canMove);
+            break;
          case 'u':
             if (canPlace(cursorY, cursorX))
             {
@@ -111,7 +160,24 @@ void BoardGUI::moveCharacter(
    }
 }
 
-bool BoardGUI::moveCursor(chtype ch, std::function<bool (int,int)> isValidBounds)
+void BoardGUI::move_cursor(chtype arrow, chtype& bottomCh, chtype topCh,
+      function<bool (int,int)> movementPredicate)
+{  
+   int tmpY = cursorY;
+   int tmpX = cursorX;
+   if (move_cursor(arrow, movementPredicate))
+   {
+      // if we did in fact move we must restore the old bottomCh, set a new
+      // bottomCh, and then place the topCh over the new bottomCh
+      b_mvaddch(tmpY, tmpX, bottomCh);
+      bottomCh = b_inch(cursorY, cursorX);
+      b_mvaddch(cursorY, cursorX, topCh);
+   }
+   b_refresh();
+}
+
+
+bool BoardGUI::move_cursor(chtype ch, std::function<bool (int,int)> isValidBounds)
 {
    int oldY = cursorY;
    int oldX = cursorX;
@@ -188,12 +254,4 @@ void BoardGUI::emptyGrid()
    b_mvaddch(0,2, 'h');
    wrefresh(win);
 }
-
-
-bool newGameBoundCheckPlayer1(int y, int x)
-{ return not (x<0 or x>9 or y<6 or y>9); }
-bool newGameBoundCheckPlayer2(int y, int x)
-{ return not (x<0 or x>9 or y>3 or y<0); }
-std::function<bool (int,int)> newGameBoundsCheck(bool bottomPlayer)
-{ return (bottomPlayer) ? newGameBoundCheckPlayer1 : newGameBoundCheckPlayer2; }
 

@@ -30,11 +30,8 @@ int main()
    int startx=(COLS-19)/2;
 
    gui.emptyGrid();
-   while (1)
-   {
-      gui.giveControl();
-   }
-
+   gui.new_game(true);
+   gui.giveControl();
    // end curses mode
    endwin();
    return 0;

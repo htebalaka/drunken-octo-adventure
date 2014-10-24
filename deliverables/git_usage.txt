@@ -1,0 +1,23 @@
+The central git repository is managed by Malcolm on github, but all team members have full read and write access to it.
+
+To add a specific file, all files, or only updated (but not newly created) files, use:
+* git add filename
+* git add -A
+* git add -u
+
+Before committing changes to your local repository, use "git status" to see exactly which files are changed. To actually commit the changes, use "git commit", or "git commit -v" to see a verbose listing of what has changed in each file.
+
+To see changes over time for the entire repo, for a specific file, or for who made the most recent change to each line of a file, use:
+* git log
+* git log --follow -p filename
+* git blame filename
+
+<--------- mike, i dont know if you put the commit message format in the coding/documentation standards or not. if you did remove it from this part -------->
+
+Git commit messages will be in a standard format, with a short executive overview of the change on the first line, a newline, followed by a detailed description of what was changed, in each file that was changed.
+
+<--------- mike, i dont know if you put the commit message format in the coding/documentation standards or not. if you did remove it from this part -------->
+
+To push and pull changes use "git push" and "git pull". We will likely need a more detailed process as the project advances, to handle the possibility of branch conflicts, as well as running test scripts as part of updating the central repo.
+
+All team members have been made aware of the book available at http://git-scm.com/book, so as our needs develop we can look to it for solutions to what are likely to be common problems.

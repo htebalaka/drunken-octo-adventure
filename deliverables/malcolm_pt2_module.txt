@@ -1,0 +1,78 @@
+/*
+ * The BoardGUI module implements the actual game: what pieces are where, what 
+ * pieces are visible, whether the player can move their pieces, etc. It must be
+ * semi-asyncronous: changes to the state of the game can occur from the player
+ * interacting with the GUI, and also due to another player over the network
+ * making a move.
+ */
+class BoardGUI
+{
+   public:
+      BoardGUI(int starty, int startx);
+      // refreshes the board, exposed publicly so that changes to the board made
+      // by the second player over the network can be communicated to the gui
+      void refresh();
+      // gives control of the game to the player, allowing them to make a move
+      void give_control();
+      // clear the board
+      void empty_grid();
+      // gives control of the game to the player, allowing them to place their
+      // pieces initially before returning their final choices as a list (with
+      // the first item of the list corresponding to the top left piece, the
+      // second corresponding to the first row/second column, etc.)
+      std::list<char> new_game(bool isBottomPlayer);
+}
+
+/*
+ * The ChatGUI module implements the chat window, allowing the players to
+ * communicate over the network. The message box must respond asyncronously,
+ * while the text box portion where the user inputs messages does not.
+ */
+class ChatGUI
+{
+   public:
+      ChatGUI(int starty, int startx, int width, int height);
+      // writes a message to the chat log
+      void log_message(string name, string msg);
+      // refreshes the chat gui. this might be redundent, but is provided for now
+      // in case the window might have another window overlapping it at some point.
+      // in that case, log_message is used to write the messages, while refresh is
+      // used to draw the screen
+      void refresh();
+      // gives control of the input box to the player, allowing them to enter and
+      // send messages
+      void give_control();
+}
+
+
+/*
+ * The MainGUI module implements the central window manager; essentially the main
+ * entry point for any user interaction. Use of the underlying GUI elements will
+ * need to be controlled from the MainGUI, and any asyncronous updates will likely
+ * need to be managed from here. The refresh and give_control functions might be
+ * made private, and run as part of MainGUI; seeing as MainGUI will probably run
+ * all the lower level internally running the constructor should be synonymous with
+ * running the program as a whole
+ */
+class MainGUI
+{
+   public:
+      // sets up ncurses, and draws the window at the given coordinates
+      MainGUI(int starty, int startx);
+      // updates itself, and all child windows
+      void refresh();
+      // gives control of the main gui to the player, allowing them to either
+      // create a game or join an existing game
+      void give_control();
+}
+
+/*
+ * The debug module implements some ncurses compatible functions to cover cout-style
+ * printing, assert statements, and possibly other functionality as needed, to be
+ * enabled with DNDEBUG. Since ncurses overwrites much of this functionality these
+ * should be helpful.
+ */
+void debug_print(string);
+void debug_print_at(string, int, int);
+void assert(bool, string);
+void exit();
