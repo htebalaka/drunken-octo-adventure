@@ -5,8 +5,9 @@
 #include <netdb.h>
 #include <fcntl.h>
 #include <sys/socket.h>
-#include<iostream>
-#include<string>
+#include <iostream>
+#include <string>
+#include <cmath>
 
 #include"../headers/sockets.h"
 using namespace std;
@@ -77,6 +78,8 @@ bool close_Connection(int sockfd){
 	close(sockfd);
 	return true;
 }
+
+
 
 void *get_in_addr(struct sockaddr *sa)//get socket address IPv4 or IPv6
 {
