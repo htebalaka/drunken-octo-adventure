@@ -88,7 +88,7 @@ int host_Connect(){
 	socklen_t clilen;
    gethostname(hostname, 127);
 	sockfd = socket(AF_INET,SOCK_STREAM,0);	
-	server.sin_port = htons(33222);	
+	server.sin_port = htons(port);	
 	server.sin_addr.s_addr = htonl(INADDR_ANY);
 	if (bind(sockfd, (struct sockaddr *)&server, sizeof(server)) != -1){
 		cout << "Please Enter a Name for your Game:\n";
