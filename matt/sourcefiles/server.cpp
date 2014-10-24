@@ -23,18 +23,21 @@ int client_Connect(){
 	game = get_Game();
 	int sockfd, numbytes;
 	sockfd = socket(AF_INET,SOCK_STREAM,0);
-
+	cout << "Connecting to " << game.host << " on port " << game.port << endl;
 	inet_pton(AF_INET, game.host.c_str(), &ipv4addr);
-	hp = gethostbyname(game.host.c_str());
+	hp = gethostbyname((game.host).c_str());
    bcopy(hp->h_addr, &(server.sin_addr.s_addr), hp->h_length);
    server.sin_port = htons(game.port);	
-	if(connect(sockfd, (const sockaddr *)&server, sizeof(server))){
-		cout << "SUCCESS!" << endl;
-		return sockfd;
+	if(connect(sockfd, (const sockaddr *)&server, sizeof(server)) < 0){
+		cout << "failed to connect!" << endl;
+		
 	}else{
-		cout << "FAILED!" << endl;
-		return -1;
+		cout << "Connected!" << endl;
+		char buf[256];
+		int numbytes = send(sockfd, "hello creator!", 20,0);
+		return sockfd;
 	}
+	
 }
 	
 
@@ -61,6 +64,10 @@ int host_Connect(){
 			if (newsockfd < 0){
   				cout << "ERROR Connecting to Client!\n";
 			}else{
+				cout << "CONNECTED!\n";
+				char buf[256];
+				int numbytes = recv(sockfd, buf, 256-1, 0);
+				cout << "message: " << buf << endl;				
 				return newsockfd;
 			}
 		}else{
