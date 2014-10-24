@@ -75,6 +75,11 @@ void BoardGUI::new_game(bool isBottomPlayer)
                chtype tmp = startRegion[regionY][cursorX];
                startRegion[regionY][cursorX] = pieces[index];
                pieces[index] = tmp;
+
+               bottomCh = startRegion[regionY][cursorX];
+               topCh = pieces[index];
+               b_mvaddch(cursorY, cursorX, topCh);
+               b_refresh();
             }
             else
             {
@@ -82,14 +87,10 @@ void BoardGUI::new_game(bool isBottomPlayer)
                // the index to point to the next piece to place
                startRegion[regionY][cursorX] = pieces[index];
                ++index;
+
+               bottomCh = startRegion[regionY][cursorX];
+               b_refresh();
             }
-            // update the bottomCh so that it is the piece currently on the
-            // board, and the topCh so that it is the piece we are currently
-            // "holding", then refresh
-            bottomCh = startRegion[regionY][cursorX];
-            topCh = pieces[index];
-            b_mvaddch(cursorY, cursorX, topCh);
-            b_refresh();
             break;
          case 'q':
             endwin();
