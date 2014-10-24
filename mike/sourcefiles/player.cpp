@@ -17,7 +17,6 @@ player::player()
 
 }
 
-bool player::strike(){return false;}  // returns who won the strike between two peices
 
 /***********************************************************************************
 *                   place a peice on the board 

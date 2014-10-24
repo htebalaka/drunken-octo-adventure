@@ -52,7 +52,6 @@ cout<<" current->rank:"<<playerPeices[pos]->rank<<endl;
 
 void player::remove(int pos)
 {
-   playerPeices[pos]=NULL;
 }
 /********************************************************************************
 *                       update method implementation

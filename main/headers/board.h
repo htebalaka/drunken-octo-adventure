@@ -18,7 +18,7 @@ class board{
       ~board(){}
 
       void set_up(char player_positions[]);  // put the players peices on the board
-      void winner(char);  // sends who won the game to players GUI
+      bool winner();  //  return true if a player has won the game
       void possible_moves(peice);   // indicate to the user what the possible moves are
       bool is_valid(int,int,int,int);  //  return if the move is valid or not
       void make_move(int, int, int, int);  // move a peice from on space to another according to how it behaves

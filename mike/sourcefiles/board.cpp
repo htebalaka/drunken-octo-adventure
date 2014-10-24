@@ -46,7 +46,6 @@ void board::set_up(char startPositions[])
          space[r][c]->rank=startPositions[pos];
          space[r][c]->color='B';
          blue.place_peice(space[r][c],startPositions[pos],'B',pos-1);
-blue.print_peice(pos-1);
          c++;
          if(c==boardSize){
             c=0;
@@ -59,7 +58,6 @@ blue.print_peice(pos-1);
          space[r][c]->rank=startPositions[pos];
          space[r][c]->color='R';
          red.place_peice(space[r][c],startPositions[pos],'R',pos-1);
-red.print_peice(pos-1);
          c++;
          if(c==boardSize){
             c=0;
@@ -71,12 +69,18 @@ red.print_peice(pos-1);
 
 /********************************************************************************************
 *                       winner implementation
-*                pre-condition player strikes the opponents flag
-*                post-condition: player is declared winner
+*                pre-condition: player color of the winner is sent
+*                post-condition: game ends
 ********************************************************************************************/
 
-bool board::winner()
-{return false;}  //  return true if a player has won the game
+void board::winner(char winnerColor)
+{
+//  sends who won the game to the players GUI
+   if (winnerColor=='B')
+   cout<<"The blue side wins\n";
+   else
+      cout<<"The red side wins\n";
+}  
 
 void board::possible_moves(peice){}   // indicate to the user what the possible moves are
 
@@ -131,8 +135,6 @@ bool board::is_valid(int rN,int cN,int r,int c)
                         return false;
                   }
                   return true;
-                  return true;
-
              }
              else if((abs(r-rN)+abs(c-cN)==1)&&(space[rN][cN]->color!=space[r][c]->color))
                 return true;
@@ -173,7 +175,7 @@ void board::make_move(int r ,int c,int rN,int cN)
 
 void board::strike(peice * &challenger,peice * &opponent)
 {
-   switch (challenger->rank){
+   switch (opponent->rank){
       case '1':
       case '2':
       case '3':
@@ -183,7 +185,7 @@ void board::strike(peice * &challenger,peice * &opponent)
       case '7':
       case '8':
       case '9':
-         if(challenger->rank>opponent->rank){
+         if(challenger->rank<opponent->rank){
             remove_peice(opponent);
             swap(opponent,challenger);
             
@@ -193,6 +195,24 @@ void board::strike(peice * &challenger,peice * &opponent)
             remove_peice(challenger);
          } else
             remove_peice(challenger);
+      break;
+
+      case 'S':
+         if ((challenger->rank=='S')&&(opponent->rank=='1'))
+            remove_peice(opponent);
+         else
+            remove_peice(challenger);
+      break;
+
+      case 'B':
+           remove_peice(challenger);
+      break;
+
+      case 'F':
+         winner(challenger->color);
+      break;
+      default:
+         return;
       }
 }
 
@@ -250,3 +270,5 @@ void board::update_side(peice * current)
    if (current->color=='B') blue.update(current); // call update on blue
    else if (current->color=='R') red.update(current);   //  call update on red
 }
+
+
