@@ -86,6 +86,12 @@ class BoardGUI
 
       void new_game(bool isBottomPlayer);
 
+      // waits for the current player to move, giving control to the user
+      void wait_for_player();
+
+      // waits for the other player to move, giving control to the networ
+      void wait_for_other_player();
+
       // loops through the game board array to draw an up to date GUI
       void refreshBoard() { b_refresh(); }
       // gives control of the board to the user

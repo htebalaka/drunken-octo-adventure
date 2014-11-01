@@ -46,11 +46,12 @@ void BoardGUI::new_game(bool isBottomPlayer)
 {
    // initialize a 4x10 board with empty characters
    vector< vector<char> > startRegion (4, vector<char> (10, ' '));
-   vector<chtype> pieces {'1','1','1','1','2','2','2','2','3','3','3','3','4','4','4','4','5','5','5','5','6','6','6','6','7','7','7','7','8','8','8','8','9','9','9','9','0','0','0','0'};
+   vector<chtype> pieces {'1' | COLOR_PAIR(5),'1' | COLOR_PAIR(6),'1','1','2','2','2','2','3','3','3','3','4','4','4','4','5','5','5','5','6','6','6','6','7','7','7','7','8','8','8','8','9','9','9','9','0','0','0','0'};
 
    chtype bottomCh = b_inch(cursorY, cursorX);
    int index = 0;
    chtype ch;
+
    while ((ch=getch()) and index < pieces.size())
    {
       // find the y index of the cursor relative to the region, 6 is the

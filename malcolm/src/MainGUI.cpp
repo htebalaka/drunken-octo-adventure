@@ -20,8 +20,9 @@ MainGUI::MainGUI()
       printf("Your terminal doesn't support colors\n");
    }
 
-   init_pair(5, COLOR_RED, -1);
-   init_pair(6, COLOR_BLUE, -1);
+   init_pair(5, COLOR_RED, COLOR_GREEN);
+   init_pair(6, COLOR_BLUE, COLOR_YELLOW);
+   attron(COLOR_PAIR(5));
 
    int starty = (LINES-HEIGHT)/2;
    int startx = (COLS-WIDTH)/2;
