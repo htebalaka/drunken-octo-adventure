@@ -5,6 +5,7 @@
 #include <functional>
 #include <vector>
 
+#include "../headers/GUI_Globals.h"
 #include "../headers/BoardGUI_hof.h"
 #include "../headers/BoardGUI.h"
 
@@ -12,10 +13,13 @@
 #define HEIGHT 21
 #define WIDTH 51
 
-int victory() { return rand() % 2; }
-int moveIsValid() { return rand() % 2; }
+using namespace std;
+using namespace GUI_Globals;
 
-void BoardGUI::giveControl()
+void BoardGUI::wait_for_player(
+      function<bool (int,int)> pickupPredicate,
+      function<bool (int,int,int,int)> placementPredicate,
+      function<void (int,int,int,int)> execTurn)
 {
    int ch;
    while ((ch=getch()))
@@ -26,46 +30,91 @@ void BoardGUI::giveControl()
             move_cursor(ch, boundsCheck(REG_GAME));
             break;
          case 'u':
-            moveCharacter(
-                  std::function<bool (int,int)>([](int y,int x) { return true; }), // can pickup
-                  boundsCheck(REG_GAME),
-                  std::function<bool (int,int)>([](int y,int x) { return true; }), // can place
-                  std::function<void (int,int,int,int)>([](int toY, int toX, int fromY, int fromX) {return;})); // update
-            break;
+            if (move_piece(
+                     pickupPredicate,
+                     boundsCheck(REG_GAME),
+                     placementPredicate,
+                     execTurn))
+            {
+               // the piece was moved and the turn is finished
+               // need to redraw the board here
+               return;
+            }
+            else
+            {
+               // the piece wasn't moved and the user still needs to
+               // finish their turn
+               break;
+            }
          case 'q':
-            endwin();
-            std::exit(1);
+            exit_gui(1);
             break;
       }
    }
 }
 
-
-
-void BoardGUI::new_game(bool isBottomPlayer)
+void BoardGUI::refresh_board(
+      function<bool (int y, int x)> isEmpty,
+      function<bool (int y, int x)> isRed,
+      function<char (int y, int x)> getChar)
 {
+   for (int y=0; y<10; ++y)
+   {
+      for (int x=0; x<10; ++x)
+      {
+         if (isEmpty(y,x))
+         {
+            // if the place is empty draw a blan
+            b_mvaddch(y,x,' ');
+         }
+         else
+         {
+            // otherwise get the character that should go there and its
+            // color and print it to that location
+            chtype color = isRed(y,x) ? RED : BLUE;
+            chtype ch = getChar(y,x);
+            b_mvaddch(y,x, ch | color);
+         }
+      }
+   }
+   // refresh the gui
+   b_refresh();
+}
+
+vector< vector<char> > BoardGUI::new_game(bool isBottomPlayer)
+{
+   empty_grid();
+
    // initialize a 4x10 board with empty characters
-   vector< vector<char> > startRegion (4, vector<char> (10, ' '));
-   vector<chtype> pieces {'1' | COLOR_PAIR(5),'1' | COLOR_PAIR(6),'1','1','2','2','2','2','3','3','3','3','4','4','4','4','5','5','5','5','6','6','6','6','7','7','7','7','8','8','8','8','9','9','9','9','0','0','0','0'};
+   vector< vector<chtype> > startRegion (4, vector<chtype> (10, ' '));
+   vector<chtype> pieces {'B','B','B','B','B','B','F','S','9','9','9','9','9','9','9','9','8','8','8','8','8','7','7','7','7','6','6','6','6','5','5','5','5','4','4','4','3','3','2','1'};
+
+   // add color to the vector of characters
+   chtype color = (isBottomPlayer) ? RED : BLUE;
+   for (int i=0; i<pieces.size(); ++i)
+   {
+      pieces[i] = pieces[i] | color;
+   }
 
    chtype bottomCh = b_inch(cursorY, cursorX);
    int index = 0;
-   chtype ch;
 
+   // loop until all pieces have been placed
+   chtype ch;
    while ((ch=getch()) and index < pieces.size())
    {
       // find the y index of the cursor relative to the region, 6 is the
       // index where the bottom region begins, otherwise it is 0. this is
       // useful for a number of the cases
-      int regionY = cursorY - ((isBottomPlayer) ? 6 : 0);
+      int regionY = cursorY - (isBottomPlayer ? 6 : 0);
       // find the piece that is currently selected, so that we can have the
-      // piece move with the cursor, will need to convert from piece adt
+      // piece move with the cursor
       chtype topCh = pieces[index];
-
+      
       switch(ch)
       {
          case 'j': case 'i': case 'l': case 'k':
-            move_cursor(ch, bottomCh, topCh, boundsCheck(
+            move_cursor_while_holding(ch, bottomCh, topCh, boundsCheck(
                      (isBottomPlayer) ? NEWGAME_BOTTOM : NEWGAME_TOP));
             break;
          case 'u':
@@ -76,58 +125,64 @@ void BoardGUI::new_game(bool isBottomPlayer)
                chtype tmp = startRegion[regionY][cursorX];
                startRegion[regionY][cursorX] = pieces[index];
                pieces[index] = tmp;
-
-               bottomCh = startRegion[regionY][cursorX];
-               topCh = pieces[index];
-               b_mvaddch(cursorY, cursorX, topCh);
-               b_refresh();
             }
             else
             {
-               // if a piece is not already placed we place it and increment
-               // the index to point to the next piece to place
+               // otherwise, we place the piece and increment the index
                startRegion[regionY][cursorX] = pieces[index];
                ++index;
-
-               bottomCh = startRegion[regionY][cursorX];
-               b_refresh();
             }
+            // then keep track of which character is being hidden, and draw
+            // the currently selected character under the cursor
+            bottomCh = startRegion[regionY][cursorX];
+            topCh = pieces[index];
+            b_mvaddch(cursorY, cursorX, topCh);
+            b_refresh();
             break;
          case 'q':
-            endwin();
-            std::exit(1);
+            exit_gui(1);
             break;
       }
    }
-   // this will need to return the startRegion vector when it comes to
-   // interfacing with the game logic portion of code
+
+   // convert the vector of chtypes to a vector of chars and return
+   vector< vector<char> > rvalue (4, vector<char> (10, ' '));
+   for (int i=0; i<4; ++i)
+   {
+      for (int j=0; j<10; ++j)
+      {
+         rvalue[i][j] = startRegion[i][j];
+      }
+   }
+   return rvalue;
 }
 
-void BoardGUI::moveCharacter(
+// attempts to pickup a piece at a location and move to another location
+// keeps track of the piece that is picked up in order to make it move with
+// the cursor, as well as its original location to make the original piece
+// blink as a visual indication to what piece is selected. returns when a
+// piece is no longer being held, either because it was moved or because the
+// player opted not to move it
+//
+// pre-post conditions:
+// no pieces are blinking, and the piece under the cursor is the same as the
+// piece on the board
+bool BoardGUI::move_piece(
       std::function<bool (int,int)> canPickup,
       std::function<bool (int,int)> canMove,
-      std::function<bool (int,int)> canPlace,
+      std::function<bool (int,int,int,int)> canPlace,
       std::function<void (int,int,int,int)> update)
 {
-   if (not canPickup(cursorY, cursorX)) return;
+   // don't continue if we can't pickup the piece
+   if (not canPickup(cursorY, cursorX)) return false;
 
-   // make 'picked up' piece move with cursor
-   chtype topCh = b_inch(cursorY, cursorX);
    // make 'picked up' piece blink
    int origY = cursorY;
    int origX = cursorX;
    b_blink(origY, origX, true);
    // make 'picked up' piece move with cursor
+   chtype topCh = b_inch(cursorY, cursorX);
    chtype bottomCh = b_inch(cursorY, cursorX);
-
-   // i would like to have an actual array that is being updated here,
-   // which i could update (with a higher-order function) rather than make
-   // changes in terms of GUI deltas. this would remove the need to keep
-   // track of bottomCh, since i could just loop through the array and
-   // then replace the character under the cursor with topCh and the
-   // orig{Y/X} with blink afterwards.
-   // this would be a little less efficient, but i think would be more
-   // readable.
 
    chtype ch;
    while ((ch=getch()))
@@ -135,33 +190,41 @@ void BoardGUI::moveCharacter(
       switch(ch)
       {
          case 'j': case 'k': case 'l': case 'i':
-            move_cursor(ch, bottomCh, topCh, canMove);
+            // if the player hits a movement key just move the piece
+            move_cursor_while_holding(ch, bottomCh, topCh, canMove);
             break;
          case 'u':
-            if (canPlace(cursorY, cursorX))
+            // if the player attempts to place the piece then...
+            if (canPlace(cursorY, cursorX, origY, origY))
             {
+               // execute the move and make the original piece blank
                update(cursorY, cursorX, origY, origX);
+               b_mvaddch(origY, origX, ' ');
                b_blink(origY, origX, false);
-               return;
+               return true;
             } else if (origX==cursorX and origY==cursorY)
             {
+               // if they attempt to move a piece to its original location
+               // just return false to indicate no move took place, returning
+               // control to the caller
                b_blink(origY, origX, false);
-               return;
+               return false;
             }
             break;
-         case 'o':
-            b_blink(origY, origX, false);
-            return;
-            break;
          case 'q':
-            endwin();
-            std::exit(1);
+            exit_gui(1);
             break;
       }
    }
+   exit_gui(1);
+   return 0;
 }
 
-void BoardGUI::move_cursor(chtype arrow, chtype& bottomCh, chtype topCh,
+/* pre-post conditions
+ * every piece except that under the cursor is correct
+ * the cursor is within the board region
+ */
+void BoardGUI::move_cursor_while_holding(chtype arrow, chtype& bottomCh, chtype topCh,
       function<bool (int,int)> movementPredicate)
 {  
    int tmpY = cursorY;
@@ -177,7 +240,9 @@ void BoardGUI::move_cursor(chtype arrow, chtype& bottomCh, chtype topCh,
    b_refresh();
 }
 
-
+/* pre-post conditions
+ * the cursor is within the board region
+ */
 bool BoardGUI::move_cursor(chtype ch, std::function<bool (int,int)> isValidBounds)
 {
    int oldY = cursorY;
@@ -197,9 +262,7 @@ bool BoardGUI::move_cursor(chtype ch, std::function<bool (int,int)> isValidBound
          --cursorY;
          break;
       default:
-         endwin();
-         std::cout << "BoardGUI::moveCursor case failure: " << ch << std::endl;
-         std::exit(1);
+         exit_gui_loudly(1, "BoardGUI::move_cursor case failure");
    }
    if (not isValidBounds(cursorY, cursorX))
    {
@@ -227,7 +290,7 @@ BoardGUI::BoardGUI(int starty, int startx)
    wrefresh(win);
 }
 
-void BoardGUI::emptyGrid()
+void BoardGUI::empty_grid()
 {
    mvwaddstr(win, 0, 0,  "-----------------------------------------");
    mvwaddstr(win, 1, 0,  "|   |   |   |   |   |   |   |   |   |   |");
@@ -250,9 +313,6 @@ void BoardGUI::emptyGrid()
    mvwaddstr(win, 18, 0, "|---|---|---|---|---|---|---|---|---|---|");
    mvwaddstr(win, 19, 0, "|   |   |   |   |   |   |   |   |   |   |");
    mvwaddstr(win, 20, 0, "-----------------------------------------");
-   b_mvaddch(0,0, 'x');
-   b_mvaddch(0,1, 'y');
-   b_mvaddch(0,2, 'h');
    wrefresh(win);
 }
 

@@ -30,19 +30,21 @@ class BoardGUI
       // cursor, but they do not modify cursor{X/Y}, and calling wrefresh
       // will reset the ncurses cursor to the correct location
       void b_mvaddch(int y, int x, chtype ch)
-      { mvwaddch(win, 1+2*y, 2+4*x, ch); }
-      void b_move(int y, int x) { wmove(win, 1+2*y, 2+4*x); }
-      chtype b_inch(int y, int x) { return mvwinch(win, 1+2*y, 2+4*x); }
+      {  mvwaddch(win, 1+2*y, 2+4*x, ch); }
+      void b_mvaddstr(int y, int x, const char* str)
+      {  mvwaddstr(win, 1+2*y, 2+4*x, str); }
+      
+      void b_move(int y, int x)
+      {  wmove(win, 1+2*y, 2+4*x); }
+      chtype b_inch(int y, int x)
+      {  return mvwinch(win, 1+2*y, 2+4*x); }
       void b_refresh()
-      {
-         b_move(cursorY, cursorX);
-
+      {  b_move(cursorY, cursorX);
          wrefresh(win);
       }
 
       void b_blink(int y, int x, bool on)
-      {
-         chtype ch = b_inch(y,x) & A_CHARTEXT;
+      {  chtype ch = b_inch(y,x) & A_CHARTEXT;
          chtype color = b_inch(y,x) & A_COLOR;
          if (on) { b_mvaddch(y, x, ch|color|WA_BLINK); }
          else { b_mvaddch(y, x, ch | color); }
@@ -55,14 +57,17 @@ class BoardGUI
       // bottomCh. ensures that the user cannot move outside of the bounds
       // specified by the movementPredicate. assumes the direction is a
       // movement key.
-      void move_cursor(chtype direction, chtype& bottomCh, chtype topCh,
-         function<bool (int,int)> movementPredicate);
+      void move_cursor_while_holding(
+            chtype direction, 
+            chtype& bottomCh, 
+            chtype topCh, 
+            function<bool (int,int)> movementPredicate);
 
       // moves the cursor up/left/right/down, ensuring it remains in the
       // region specified by the predicate function. returns true if the
       // cursor was successfully moved, 0 otherwise. asserts that the
       // direction is a movement key.
-      bool move_cursor(chtype direction, std::function<bool (int, int)> bounds);
+      bool move_cursor(chtype direction, function<bool (int, int)> bounds);
 
       // attempts to pickup the character under the cursor, allowing the
       // user to move it around and place it in a new location. takes
@@ -74,32 +79,45 @@ class BoardGUI
       // - whether the user can move the cursor to a particular region
       // - whether the user can place the character at a particular spot
       // - an update function taking ((toY,toX),(fromY,fromX))
-      void moveCharacter(
-            std::function<bool (int,int)> canPickup,
-            std::function<bool (int,int)> canMove,
-            std::function<bool (int,int)> canPlace,
-            std::function<void (int,int,int,int)> update);
-            //std::function<void (std::pair<int,int>,std::pair<int,int>)> update);
+      // unlike the other move_* functions move_piece allows you to move
+      // multiple spaces, whereas the others only move a single space.
+      // move_piece returns when the piece is put down, either because it
+      // was moved and the turn is finished (returning true) or because the
+      // user decided to move a different piece (returning false)
+      bool move_piece(
+            function<bool (int,int)> canPickup,
+            function<bool (int,int)> canMove,
+            function<bool (int,int,int,int)> canPlace,
+            function<void (int,int,int,int)> update);
 
    public:
       BoardGUI(int starty, int startx);
 
-      void new_game(bool isBottomPlayer);
+      // gives control to the player to let them set up their pieces at the
+      // start of the game, returning a 2d vector of the pieces that they
+      // placed
+      vector< vector<char> > new_game(bool isBottomPlayer);
 
+      // gives control to the player to let them make a move
       // waits for the current player to move, giving control to the user
-      void wait_for_player();
+      // until they finish their turn. takes functions to be executed to tell
+      // if a piece can be picked up or moved
+      void wait_for_player(
+            function<bool (int Y, int X)> pickupPredicate,
+            function<bool (int newY, int newX, int oldY, int oldX)> placementPredicate,
+            function<void (int newY, int newX, int oldY, int oldX)> execTurn
+            );
 
-      // waits for the other player to move, giving control to the networ
-      void wait_for_other_player();
+      // loops through the game board array to draw an up to date GUI. takes
+      // function arguments which are used to query what to draw at each 
+      // square. isRed and getChar may be undefined if the location is empty
+      void refresh_board(
+            function<bool (int y, int x)> isEmpty,
+            function<bool (int y, int x)> isRed,
+            function<char (int y, int x)> getChar);
 
-      // loops through the game board array to draw an up to date GUI
-      void refreshBoard() { b_refresh(); }
-      // gives control of the board to the user
-      void giveControl();
-      // allows the player to place all of their pieces at the start
-      std::vector<char> newGame(bool bottomPlayer);
       // clears the board
-      void emptyGrid();
+      void empty_grid();
 };
 
 #endif
