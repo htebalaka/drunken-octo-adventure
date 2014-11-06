@@ -30,6 +30,4 @@ std::function<bool (int,int)> boundsCheck(GAME_MODE mode)
    }
 }
 
-bool constTrue(int x, int y) { return true; }
-
 #endif

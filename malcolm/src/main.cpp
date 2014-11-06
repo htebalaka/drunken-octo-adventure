@@ -2,38 +2,22 @@
 #include <ncurses.h>
 #include <panel.h>
 #include <iostream>
+#include <locale.h>
 
 #include "../headers/BoardGUI.h"
+#include "../headers/GUI_Globals.h"
+
+using namespace GUI_Globals;
 
 int main()
 {
-   initscr();
-   start_color();
-   raw();
-   keypad(stdscr, TRUE);
-   noecho();
-   MEVENT event;
-   mousemask(ALL_MOUSE_EVENTS, NULL);
-   if (has_colors() == FALSE)
-   {
-      endwin();
-      printf("Your terminal doesn't support colors\n");
-      return 1;
-   }
-   init_pair(1, COLOR_RED, -1);
-   init_pair(2, COLOR_BLUE, -1);
+   init_gui();
 
-   BoardGUI gui(20, 20);
-   getch();
-
-   int starty=(LINES-10)/2;
-   int startx=(COLS-19)/2;
-
-   gui.emptyGrid();
+   int starty = (LINES-HEIGHT)/2;
+   int startx = (COLS-WIDTH)/2;
+   BoardGUI gui(starty, startx);
    gui.new_game(true);
-   gui.giveControl();
-   // end curses mode
-   endwin();
-   return 0;
+   
+   exit_gui(0);
 }
 
