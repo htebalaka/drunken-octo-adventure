@@ -8,6 +8,7 @@
 #include "../headers/player.h"
 #include "../headers/piece.h"
 #include "../headers/globalConstants.h"
+#include "../headers/sockets.h"
 #include <iostream>
 #include <fstream>
 #include "stdio.h"
@@ -22,17 +23,48 @@ void won(bool whoWon);
 
 int main()
 {
+bool stop = false;
 /**********************************************************************************************
 *                       create a session and find a challenger
 **********************************************************************************************/
+int sockfd;//socket identifier, required for all communications
+int playerType;//0=host,1=client
 
-
-
-
+bool action = false;
+	do{
+		string name;
+		cout << "1 - Create New Game\n";
+		cout << "2 - Join Existing Game\n";
+		cout << "Enter Command: ";
+		int command;
+		cin >> command;
+		switch(command){
+			case 1:
+				sockfd = host_Connect();
+				if(sockfd){
+					playerType = 0;
+					action = true;
+				}else{
+					cerr << "Could Not Connect Socket\n";
+				}
+			break;
+			case 2:
+				sockfd = client_Connect();
+				if(sockfd){
+					playerType = 1;
+					action = true;
+				}else{
+					cerr << "Could Not Connect Socket\n";
+				}
+			break;
+			default:
+				cout << "**INVALID COMMAND**";
+			break;
+		}
+	}while(!action);
 /**********************************************************************************************
 *                       enter game session
 **********************************************************************************************/
-   bool stop = false;
    while (!stop){      // while the players want to play maintain a connection
 /**********************************************************************************************
 *                      create a new game
