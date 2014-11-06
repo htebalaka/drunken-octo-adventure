@@ -6,7 +6,7 @@
 
 #include "../headers/board.h"
 #include "../headers/player.h"
-#include "../headers/peice.h"
+#include "../headers/piece.h"
 #include "../headers/globalConstants.h"
 #include <iostream>
 #include <fstream>
@@ -42,7 +42,7 @@ int main()
       char redPieces[41];  // declare an array to hold red's initial piece positions
       char bluePieces[41];  // declare an array to hold blue's initioal piece positions
       //  get player positions
-      //  place the peices into the players piece arrays
+      //  place the pieces into the players piece arrays
       //  place the pieces on the board
 
 /**********************************************************************************************

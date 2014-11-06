@@ -6,6 +6,6 @@
 #define GLOBALCONSTANTS_H
 
 const int boardSize=10;
-const int numberOfPeices=40;
+const int numberOfPieces=40;
 
 #endif

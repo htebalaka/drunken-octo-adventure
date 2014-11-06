@@ -7,7 +7,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "peice.h"
+#include "piece.h"
 #include "player.h"
 #include "globalConstants.h"
 
@@ -17,22 +17,22 @@ class board{
       board();
       ~board(){}
 
-      void set_up(char player_positions[]);  // put the players peices on the board
+      void set_up(char player_positions[]);  // put the players pieces on the board
       void winner(char );  //  return true if a player has won the game
-      void possible_moves(peice);   // indicate to the user what the possible moves are
+      void possible_moves(piece);   // indicate to the user what the possible moves are
       bool is_valid(int,int,int,int);  //  return if the move is valid or not
-      void make_move(int, int, int, int);  // move a peice from on space to another according to how it behaves
-      void strike(peice *&, peice *&);  // determines the winner of a strike
+      void make_move(int, int, int, int);  // move a piece from on space to another according to how it behaves
+      void strike(piece *&, piece *&);  // determines the winner of a strike
 
       void print_board();    //  print the board as it stands 
       void print_space(int r,int c);  // debugging method
    private:
 
-      peice * space[boardSize][boardSize];
+      piece * space[boardSize][boardSize];
       player red, blue;
-      void update_side(peice *); 
-      void swap(peice *&,peice *&);
-      void remove_peice(peice *);
+      void update_side(piece *); 
+      void swap(piece *&,piece *&);
+      void remove_piece(piece *);
 };    
 
 #endif

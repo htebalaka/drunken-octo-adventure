@@ -9,7 +9,7 @@
 
 #ifndef PLAYER_H
 #define PLAYER_H
-#include "peice.h"
+#include "piece.h"
 #include "globalConstants.h"
 
 class player
@@ -18,13 +18,14 @@ class player
         player();
         ~player(){}
 
-        void place_peice(peice * ,char,char,int);  // initialize the players peices at the beginning of the game
-        void update(peice *);  // update the player peice array
-        void remove(int);  // remove a peice from a players side
-void print_peice(int);
-void print_playerPeices();
+        void place_piece(piece* ,char,char,int);  // initialize the players pieces at the beginning of the game
+        void update(piece*);  // update the player piece array
+
+/*                         testing methods                                                   */
+        void print_piece(int);
+        void print_playerPieces();
      private:
-        peice * playerPeices[numberOfPeices];
+        piece* playerPieces[numberOfPieces];
 };
 
 #endif
