@@ -5,6 +5,9 @@
 #include <functional>
 #include <vector>
 
+#include <chrono>
+#include <thread>
+
 #include "../headers/GUI_Globals.h"
 #include "../headers/BoardGUI_hof.h"
 #include "../headers/BoardGUI.h"
@@ -83,11 +86,11 @@ void BoardGUI::refresh_board(
 
 vector< vector<char> > BoardGUI::new_game(bool isBottomPlayer)
 {
-   empty_grid();
-
+   //empty_grid();
    // initialize a 4x10 board with empty characters
    vector< vector<chtype> > startRegion (4, vector<chtype> (10, ' '));
    vector<chtype> pieces {'B','B','B','B','B','B','F','S','9','9','9','9','9','9','9','9','8','8','8','8','8','7','7','7','7','6','6','6','6','5','5','5','5','4','4','4','3','3','2','1'};
+
 
    // add color to the vector of characters
    chtype color = (isBottomPlayer) ? RED : BLUE;
@@ -101,6 +104,7 @@ vector< vector<char> > BoardGUI::new_game(bool isBottomPlayer)
 
    // loop until all pieces have been placed
    chtype ch;
+
    while ((ch=getch()) and index < pieces.size())
    {
       // find the y index of the cursor relative to the region, 6 is the
@@ -262,7 +266,7 @@ bool BoardGUI::move_cursor(chtype ch, std::function<bool (int,int)> isValidBound
          --cursorY;
          break;
       default:
-         exit_gui_loudly(1, "BoardGUI::move_cursor case failure");
+         exit_gui_loudly("BoardGUI::move_cursor case failure");
    }
    if (not isValidBounds(cursorY, cursorX))
    {

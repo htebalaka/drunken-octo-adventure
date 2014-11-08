@@ -16,6 +16,7 @@ int main()
    int starty = (LINES-HEIGHT)/2;
    int startx = (COLS-WIDTH)/2;
    BoardGUI gui(starty, startx);
+   gui.empty_grid();
    gui.new_game(true);
    
    exit_gui(0);
