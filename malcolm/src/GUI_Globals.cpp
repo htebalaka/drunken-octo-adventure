@@ -2,7 +2,16 @@
 #include <ncurses.h>
 #include <string>
 #include <iostream>
+
+#include "../headers/BoardGUI.h"
 #include "../headers/GUI_Globals.h"
+
+BoardGUI GUI_Globals::smart_init_board()
+{
+   int starty=(LINES-HEIGHT)/2;
+   int startx=(COLS-WIDTH)/2;
+   return BoardGUI(starty, startx);
+}
 
 bool GUI_Globals::GUI_IS_ON = false;
 
@@ -29,14 +38,12 @@ void GUI_Globals::init_gui()
 
 
 void GUI_Globals::exit_gui(int errCode)
-{  if (GUI_Globals::GUI_IS_ON)
-   {  endwin(); }
+{  endwin();
    std::exit(errCode);
 }
 
 void GUI_Globals::exit_gui_loudly(std::string format)
-{  if (GUI_Globals::GUI_IS_ON)
-   {  endwin(); }
+{  endwin();
    std::cout << format;
    std::exit(1);
 }
