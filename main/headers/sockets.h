@@ -25,6 +25,9 @@ struct game_Info{
 	int port;
 	string address;
 	string host;
+   string userName;
+   string opponent;
+   int sockfd;
 };
 
 const int maxLength = 256;
@@ -40,9 +43,9 @@ get_Game displays list of availible games to join, then prompts the user to sele
 game_Info get_Game();
 
 string recv_f(int sockfd);
-bool create_Game(int port, string host, string name);	//adds a new game to the gameFile	
+game_Info create_Game(int port, string host, string name, string userName);	//adds a new game to the gameFile	
+bool clear_Game(string name);
+game_Info client_Connect(); //connect client(player 2) to their chosen game, returns socket ID
 
-int client_Connect(); //connect client(player 2) to their chosen game, returns socket ID
-
-int host_Connect(); //creates the game and waits for player 2.
+game_Info host_Connect(); //creates the game and waits for player 2.
 bool close_Connection(int sockfd);
