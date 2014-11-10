@@ -1,16 +1,16 @@
 /*************************************************************************
-*                    peice datatype definition
+*                    piece datatype definition
 *                    Michael Grant
 *                    csci265
 **************************************************************************/
 
 
-#ifndef PEICE_H
-#define PEICE_H
+#ifndef PIECE_H
+#define PIECE_H
 
-struct peice{
+struct piece{
          char color;        // R for Red  B for blue E for empty
          char rank;
-         int peiceNumber;
+         int pieceNumber;
       };
 #endif

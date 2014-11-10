@@ -21,6 +21,7 @@ using namespace std;
 
 void won(bool whoWon);
 
+<<<<<<< HEAD
 void fillarray(string value, char * array);
 
 int main()
@@ -112,11 +113,24 @@ bool action = false;
       }
       
 	}while(!action);
+=======
+int main()
+{
+/**********************************************************************************************
+*                       create a session and find a challenger
+**********************************************************************************************/
+
+
+>>>>>>> 5ffb66b385be0515f0f0d715c70161a879a5f922
 
 
 /**********************************************************************************************
 *                       enter game session
 **********************************************************************************************/
+<<<<<<< HEAD
+=======
+   bool stop = false;
+>>>>>>> 5ffb66b385be0515f0f0d715c70161a879a5f922
    while (!stop){      // while the players want to play maintain a connection
 /**********************************************************************************************
 *                      create a new game
@@ -184,9 +198,12 @@ void won(bool whoWon)
    else cout<<"Blue won!\n";
 }
 
+<<<<<<< HEAD
 void fillarray(string value, char * array){
    for(int i=0;i<value.size();i++){
       array[i] = value[i];
    }
 }
 
+=======
+>>>>>>> 5ffb66b385be0515f0f0d715c70161a879a5f922

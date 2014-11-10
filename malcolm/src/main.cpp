@@ -2,7 +2,6 @@
 #include <ncurses.h>
 #include <panel.h>
 #include <iostream>
-#include <locale.h>
 
 #include "../headers/BoardGUI.h"
 #include "../headers/GUI_Globals.h"
@@ -13,11 +12,9 @@ int main()
 {
    init_gui();
 
-   int starty = (LINES-HEIGHT)/2;
-   int startx = (COLS-WIDTH)/2;
-   BoardGUI gui(starty, startx);
+   BoardGUI gui = smart_init_board();
    gui.new_game(true);
-   
    exit_gui(0);
+   return 0;
 }
 
