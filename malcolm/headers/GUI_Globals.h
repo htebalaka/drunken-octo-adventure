@@ -5,6 +5,7 @@
 #include <ncurses.h>
 #include <string>
 #include <iostream>
+#include "../headers/BoardGUI.h"
 
 namespace GUI_Globals
 {
@@ -17,8 +18,9 @@ namespace GUI_Globals
    // sets up global variables necessary to use ncurses
    void init_gui();
    void exit_gui(int errCode);
-   void exit_gui_loudly(int errCode, std::string format);
+   void exit_gui_loudly(std::string format);
    void assert(bool condition, std::string format);
+   BoardGUI smart_init_board();
 }
 
 #endif

@@ -21,14 +21,23 @@ using namespace std;
 
 void won(bool whoWon);
 
+void fillarray(string value, char * array);
+
 int main()
 {
 bool stop = false;
 /**********************************************************************************************
 *                       create a session and find a challenger
+                        input required: none;
+                        output: gameData//defined in sockets.h
+                                    includes: port, host, name//of game , userName, opponent,sockfd
+                                 playerType//R or B
+                                 boardData//board Data of other player
+                                 positions//board Data of you!
+                               
 **********************************************************************************************/
-int sockfd;//socket identifier, required for all communications
-int playerType;//0=host,1=client
+game_Info gameData;//All relevent game data stored here.
+char playerType;//B=host,R=client
 
 bool action = false;
 	do{
@@ -40,18 +49,18 @@ bool action = false;
 		cin >> command;
 		switch(command){
 			case 1:
-				sockfd = host_Connect();
-				if(sockfd){
-					playerType = 0;
+				gameData = host_Connect();
+				if(gameData.sockfd){
+					playerType = 'B';
 					action = true;
 				}else{
 					cerr << "Could Not Connect Socket\n";
 				}
 			break;
 			case 2:
-				sockfd = client_Connect();
-				if(sockfd){
-					playerType = 1;
+				gameData = client_Connect();
+				if(gameData.sockfd){
+					playerType = 'R';
 					action = true;
 				}else{
 					cerr << "Could Not Connect Socket\n";
@@ -61,7 +70,51 @@ bool action = false;
 				cout << "**INVALID COMMAND**";
 			break;
 		}
+      string initialize;
+      initialize += playerType + " ";
+      string positions;
+      positions = "1 2 3 4 5 6 7 8 9 1 2 3 4 5 6 7 8 9 1";//for debugging only. remove later
+/*********************************************************************************************
+   Board setup here, initialize current player positions
+    and put into positions string as formatted above
+*********************************************************************************************/
+      initialize += positions;
+      char buffer[MAXDATASIZE];
+      fillarray(initialize, buffer);
+      string boardData;//storage for board information received from other player.
+
+      switch(playerType){//sockets are a 1 way street, cant send and recieve at the same time...
+
+         case 'B'://host  always sends first
+            send(gameData.sockfd, buffer , MAXDATASIZE, 0);//send board data to client
+            recv(gameData.sockfd, buffer , MAXDATASIZE, 0);//recieve clients board data
+            boardData = buffer;
+            fillarray(gameData.userName, buffer);
+            send(gameData.sockfd, buffer , MAXDATASIZE, 0);//send username to client
+            recv(gameData.sockfd, buffer , MAXDATASIZE, 0);//recieve opponent username
+            gameData.opponent = buffer; //set opponent
+
+         break;
+
+         case 'R'://client recieves first
+            recv(gameData.sockfd, buffer , MAXDATASIZE, 0);//recieve hosts board data
+            boardData = buffer;
+            send(gameData.sockfd, buffer , MAXDATASIZE, 0);//send board data to host
+            recv(gameData.sockfd, buffer , MAXDATASIZE, 0);//recieve username from host
+            gameData.opponent = buffer; //set opponent
+            fillarray(gameData.userName, buffer);
+            send(gameData.sockfd, buffer , MAXDATASIZE, 0);//send username to host
+         break;
+
+         default://something went wrong!
+            cout << "ERROR, Unable to determine player type!\n";
+            stop = true;//shut down, we cant continue
+         break;
+      }
+      
 	}while(!action);
+
+
 /**********************************************************************************************
 *                       enter game session
 **********************************************************************************************/
@@ -130,5 +183,11 @@ void won(bool whoWon)
 {
    if (whoWon) cout<<"Red won!\n";
    else cout<<"Blue won!\n";
+}
+
+void fillarray(string value, char * array){
+   for(int i=0;i<value.size();i++){
+      array[i] = value[i];
+   }
 }
 
