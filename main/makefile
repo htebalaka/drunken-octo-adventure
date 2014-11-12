@@ -7,22 +7,31 @@ flags=-Wall
 
 
 
-testBoard:  headers/globalConstants.h headers/peice.h headers/player.h headers/board.h  objectfiles/player.o objectfiles/board.o objectfiles/game.o objectfiles/server.o
+testBoard:  headers/globalConstants.h headers/piece.h headers/player.h headers/board.h  objectfiles/player.o objectfiles/board.o objectfiles/game.o objectfiles/server.o
 	echo making testBoard
-	$(CXX) $(flags) objectfiles/player.o objectfiles/board.o objectfiles/game.o objectfiles/server.o -o game
+	$(CXX) $(flags) objectfiles/player.o objectfiles/board.o objectfiles/game.o objectfiles/server.o -o testboard
 
-objectfiles/player.o: headers/globalConstants.h headers/peice.h headers/player.h sourcefiles/player.cpp
+objectfiles/player.o: headers/globalConstants.h headers/piece.h headers/player.h sourcefiles/player.cpp
 	echo making player.o
 	$(CXX) $(flags) sourcefiles/player.cpp -c -o objectfiles/player.o
 
-objectfiles/board.o:  headers/globalConstants.h headers/peice.h headers/player.h headers/board.h sourcefiles/board.cpp
+objectfiles/board.o:  headers/globalConstants.h headers/piece.h headers/player.h headers/board.h sourcefiles/board.cpp
 	echo making board.o
 	$(CXX) $(flags) sourcefiles/board.cpp -c -o objectfiles/board.o
 
-objectfiles/game.o: headers/globalConstants.h headers/peice.h headers/player.h headers/board.h  sourcefiles/game.cpp headers/sockets.h
+objectfiles/game.o: headers/globalConstants.h headers/piece.h headers/player.h headers/board.h  sourcefiles/game.cpp headers/sockets.h
 	echo making game.o
 	$(CXX) $(flags) sourcefiles/game.cpp -c -o objectfiles/game.o
 
 objectfiles/server.o:  sourcefiles/server.cpp headers/sockets.h headers/globalConstants.h
 	echo making server.o
 	$(CXX) $(flags) sourcefiles/server.cpp -c -o objectfiles/server.o
+
+testPlayer:  headers/player.h headers/piece.h objectfiles/player.o testfiles/testPlayer.cpp
+	echo making testPlayer driver
+	$(CXX) $(flags) objectfiles/player.o testfiles/testPlayer.cpp  -o testPlayer
+
+
+
+
+
