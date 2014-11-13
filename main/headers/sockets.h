@@ -42,7 +42,7 @@ get_Game displays list of availible games to join, then prompts the user to sele
 */
 void fillarray(string value, char * array);
 game_Info get_Game();
-string sync_Board(string board, game_Info gameData);
+char *sync_Board(string board, game_Info gameData);
 string recv_f(int sockfd);
 game_Info create_Game(int port, string host, string name, string userName);	//adds a new game to the gameFile	
 bool clear_Game(string name);
