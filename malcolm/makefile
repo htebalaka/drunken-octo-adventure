@@ -6,6 +6,10 @@ GUI_GLOBALS_H=headers/GUI_Globals.h
 GUI_GLOBALS_CPP=src/GUI_Globals.cpp
 GUI_GLOBALS_O=objects/GUI_Globals.o
 
+ZENITY_H=headers/Zenity.h
+ZENITY_CPP=src/Zenity.cpp
+ZENITY_O=objects/Zenity.o
+
 BOARDGUI_HOF_H=headers/BoardGUI_hof.h
 
 BOARDGUI_H=headers/BoardGUI.h
@@ -27,7 +31,10 @@ ${BOARDGUI_O}: ${BOARDGUI_CPP} ${BOARDGUI_H} ${BOARDGUI_HOF_H}
 ${GUI_GLOBALS_O}: ${GUI_GLOBALS_CPP} ${GUI_GLOBALS_H} ${BOARDGUI_H}
 	@echo "Creating ${GUI_GLOBALS_O}"
 	${GCC} -c ${GUI_GLOBALS_CPP} ${FLAGS} -o ${GUI_GLOBALS_O}
+${ZENITY_O}: ${ZENITY_CPP} ${ZENITY_H}
+	@echo "Creating ${ZENITY_O}"
+	${GCC} -c ${ZENITY_CPP} ${FLAGS} -o ${ZENITY_O}j
 
-all: ${BOARDGUI_O} ${MAIN_CPP} ${GUI_GLOBALS_O}
+all: ${BOARDGUI_O} ${MAIN_CPP} ${GUI_GLOBALS_O} ${ZENITY_O}
 	@echo "Creating main.out"
 	${GCC} ${BOARDGUI_O} ${GUI_GLOBALS_O} ${MAIN_CPP} ${FLAGS} -o bin/main.out

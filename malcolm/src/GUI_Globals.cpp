@@ -2,6 +2,7 @@
 #include <ncurses.h>
 #include <string>
 #include <iostream>
+#include <cstdio>
 
 #include "../headers/BoardGUI.h"
 #include "../headers/GUI_Globals.h"
@@ -36,7 +37,6 @@ void GUI_Globals::init_gui()
    GUI_Globals::GUI_IS_ON = true;
 }
 
-
 void GUI_Globals::exit_gui(int errCode)
 {  endwin();
    std::exit(errCode);
@@ -48,7 +48,9 @@ void GUI_Globals::exit_gui_loudly(std::string format)
    std::exit(1);
 }
 
-void GUI_Globals::assert(bool condition, std::string format)
+   void GUI_Globals::assert(bool condition, std::string format)
 {  if (!condition)
    { GUI_Globals::exit_gui_loudly(format); }
 }
+
+

@@ -30,4 +30,25 @@ std::function<bool (int,int)> boundsCheck(GAME_MODE mode)
    }
 }
 
+char[] flattenVec(std::vector< std::vector<std::string> > vec, bool isBottomPlayer)
+{
+   char rvalue[41];
+   rvalue[0] = isBottomPlayer ? 'R' : 'B';
+   int i = 1;
+   for (auto vec2 : vec)
+   {
+      for (auto e : vec2)
+      {  
+         if (i==41)
+         {
+            return rvalue;
+         }
+         else
+         {
+            rvalue[i] = e;
+         }
+      }
+   }
+}
+
 #endif
