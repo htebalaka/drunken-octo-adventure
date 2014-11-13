@@ -6,8 +6,8 @@
 #include <fcntl.h>
 #include <sys/socket.h>
 #include <iostream>
-#include<fstream>
-#include<sstream>
+#include <fstream>
+#include <sstream>
 #include <string>
 #include <cmath>
 #include <stdio.h>
@@ -95,6 +95,7 @@ game_Info client_Connect(){
 	int rec = atoi(recm);
 	if(rec == 1){
 		send(sockfd, "2", MAXDATASIZE, 0);//confirm connection by sending 2.
+		cout << "here!\n";
 		if(clear_Game(gameData.name)){//clear the game from the pending game list and start.
 			cout << "Starting game...\n";
 		}else{
@@ -231,7 +232,9 @@ game_Info get_Game(){
 	if(gamefile.is_open()){//get number of availible games
 		while(!gamefile.eof()){
 			getline(gamefile,line);
-			numGames++;
+			if(line != ""){
+				numGames++;
+			}
 		}
 		gamefile.close();
 	}
@@ -253,14 +256,14 @@ game_Info get_Game(){
 	gamefile.close();
 	cout << "Availible Games:\n";
 	cout << "Games:" << numGames << endl;
-	for(int i=0;i < (numGames-1);i++){//display list of games to user
+	for(int i=0;i < (numGames);i++){//display list of games to user
 		cout << i << " : " << games[i].name << endl;
 	}
 	cout << "Enter Game: ";//require user to enter desired game number
 	int dGame;
 	do{
 	cin >> dGame;
-	if((dGame < 0) || (dGame > (numGames-2))){//make sure selection is valid
+	if((dGame < 0) || (dGame > (numGames))){//make sure selection is valid
 		cout << "**ERROR Invalid Game Selection!\nPlease Enter Game: ";
 	}
 	}while((dGame < 0) || (dGame > (numGames-1)));
@@ -295,20 +298,21 @@ bool clear_Game(string name){
 			iss >> games[select].host;
 			iss >> games[select].name;
          iss >> games[select].userName;
+			if(games[select].userName != ""){
 			select++;
+			}
 		}
 	}
 	gamefile.close();
-
-
 	ofstream writeFile;
 	writeFile.open("/home/student/marwoomd/Public/connections.txt");
-	for(int i = 0; i < select;i++){//rewrite the file, if we find a name match skip writting it.
-		if(games[select].name != name){
-			string data = games[select].port + " " + games[select].host + " " + games[select].name + games[select].userName + "\n";
-			writeFile << data;
+	for(int i = 0; i <= select;i++){//rewrite the file, if we find a name match skip writting it.
+		if(games[i].name != name){
+			writeFile << games[i].port + " " + games[i].host + " " + games[i].name + " " + games[i].userName + "\n";
 		}
 	}
+	writeFile.close();
+	cout << "IT WROTE!\n";
    return true;
 }
 	
@@ -330,7 +334,7 @@ game_Info create_Game(int port, string host, string name, string userName){
 	convert << port;//add the value of Number to the characters in the stream
 	sPort = convert.str();
 	writeFile.open("/home/student/marwoomd/Public/connections.txt",fstream::app);
-		string data = sPort + " " + host + " " + name + userName + "\n";
+		string data = sPort + " " + host + " " + name + " " + userName + "\n";
 		writeFile << data;
       
 		return gameData;
