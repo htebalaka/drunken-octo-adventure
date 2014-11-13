@@ -6,7 +6,7 @@
 
 #include "../headers/board.h"
 #include "../headers/player.h"
-#include "../headers/peice.h"
+#include "../headers/piece.h"
 #include "../headers/globalConstants.h"
 #include "../headers/sockets.h"
 #include <iostream>
@@ -20,9 +20,6 @@ using namespace std;
 **********************************************************************************************/
 
 void won(bool whoWon);
-
-<<<<<<< HEAD
-void fillarray(string value, char * array);
 
 int main()
 {
@@ -38,7 +35,6 @@ bool stop = false;
                                
 **********************************************************************************************/
 game_Info gameData;//All relevent game data stored here.
-char playerType;//B=host,R=client
 
 bool action = false;
 	do{
@@ -52,7 +48,7 @@ bool action = false;
 			case 1:
 				gameData = host_Connect();
 				if(gameData.sockfd){
-					playerType = 'B';
+					gameData.playerType = 'B';
 					action = true;
 				}else{
 					cerr << "Could Not Connect Socket\n";
@@ -61,7 +57,7 @@ bool action = false;
 			case 2:
 				gameData = client_Connect();
 				if(gameData.sockfd){
-					playerType = 'R';
+					gameData.playerType = 'R';
 					action = true;
 				}else{
 					cerr << "Could Not Connect Socket\n";
@@ -71,66 +67,24 @@ bool action = false;
 				cout << "**INVALID COMMAND**";
 			break;
 		}
-      string initialize;
-      initialize += playerType + " ";
-      string positions;
-      positions = "1 2 3 4 5 6 7 8 9 1 2 3 4 5 6 7 8 9 1";//for debugging only. remove later
-/*********************************************************************************************
-   Board setup here, initialize current player positions
-    and put into positions string as formatted above
-*********************************************************************************************/
-      initialize += positions;
-      char buffer[MAXDATASIZE] = fillarray(initialize);
-      string boardData;//storage for board information received from other player.
-
-      switch(playerType){//sockets are a 1 way street, cant send and recieve at the same time...
-
-         case 'B'://host  always sends first
-            send(gameData.sockfd, buffer , MAXDATASIZE, 0);//send board data to client
-            recv(gameData.sockfd, buffer , MAXDATASIZE, 0);//recieve clients board data
-            boardData = buffer;
-            fillarray(gameData.userName, buffer);
-            send(gameData.sockfd, buffer , MAXDATASIZE, 0);//send username to client
-            recv(gameData.sockfd, buffer , MAXDATASIZE, 0);//recieve opponent username
-            gameData.opponent = buffer; //set opponent
-
-         break;
-
-         case 'R'://client recieves first
-            recv(gameData.sockfd, buffer , MAXDATASIZE, 0);//recieve hosts board data
-            boardData = buffer;
-            send(gameData.sockfd, buffer , MAXDATASIZE, 0);//send board data to host
-            recv(gameData.sockfd, buffer , MAXDATASIZE, 0);//recieve username from host
-            gameData.opponent = buffer; //set opponent
-            fillarray(gameData.userName, buffer);
-            send(gameData.sockfd, buffer , MAXDATASIZE, 0);//send username to host
-         break;
-
-         default://something went wrong!
-            cout << "ERROR, Unable to determine player type!\n";
-            stop = true;//shut down, we cant continue
-         break;
-      }
-      
+	 
 	}while(!action);
-=======
-int main()
-{
-/**********************************************************************************************
-*                       create a session and find a challenger
-**********************************************************************************************/
 
-
->>>>>>> 5ffb66b385be0515f0f0d715c70161a879a5f922
-
+	
+	cout << "---------- " << gameData.name << " ---------------\n";
+	cout << "Username: " << gameData.userName << endl;
+	cout << "Opponent: " << gameData.opponent << endl;
+	string positions;
+	cout << "Please enter positions seperated by a space:\n";
+	cin.clear();
+	getline(cin, positions);
+	string opponentBoard = sync_Board(positions,gameData);
+	cout << "Opponent Positions: " << opponentBoard << endl;
+	stop = true;//for debugging only
 
 /**********************************************************************************************
 *                       enter game session
 **********************************************************************************************/
-<<<<<<< HEAD
-=======
-   bool stop = false;
->>>>>>> 5ffb66b385be0515f0f0d715c70161a879a5f922
    while (!stop){      // while the players want to play maintain a connection
 /**********************************************************************************************
 *                      create a new game
@@ -140,7 +94,7 @@ int main()
       char redPieces[41];  // declare an array to hold red's initial piece positions
       char bluePieces[41];  // declare an array to hold blue's initioal piece positions
       //  get player positions
-      //  place the peices into the players piece arrays
+      //  place the pieces into the players piece arrays
       //  place the pieces on the board
 
 /**********************************************************************************************
@@ -198,12 +152,5 @@ void won(bool whoWon)
    else cout<<"Blue won!\n";
 }
 
-<<<<<<< HEAD
-void fillarray(string value, char * array){
-   for(int i=0;i<value.size();i++){
-      array[i] = value[i];
-   }
-}
 
-=======
->>>>>>> 5ffb66b385be0515f0f0d715c70161a879a5f922
+

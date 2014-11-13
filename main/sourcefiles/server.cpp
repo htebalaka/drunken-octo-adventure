@@ -52,11 +52,17 @@ void sigchld_handler(int s)
 **********************************************************************************************/
 game_Info client_Connect(){
 	game_Info gameData;
+	cout << "Please Enter a Username:\n";
+   string userName;
+   cin >> userName;
 	gameData = get_Game();
 	string sport ;
 	stringstream out;
 	out << gameData.port;
 	sport = out.str();
+	string opponent = gameData.userName; //the opponents name is what is currently in gameData
+	gameData.userName = userName; //set userName
+	gameData.opponent = opponent;
 	int sockfd;  
 	struct addrinfo hints, *servinfo, *p;
 	int rv;
@@ -95,16 +101,50 @@ game_Info client_Connect(){
 	int rec = atoi(recm);
 	if(rec == 1){
 		send(sockfd, "2", MAXDATASIZE, 0);//confirm connection by sending 2.
-		cout << "here!\n";
+		char userName[MAXDATASIZE];
+ 		fillarray(gameData.userName, userName);
+      send(sockfd, userName , MAXDATASIZE, 0);//send username to host
 		if(clear_Game(gameData.name)){//clear the game from the pending game list and start.
-			cout << "Starting game...\n";
+			gameData.sockfd = sockfd;
+			return gameData;
 		}else{
 			cout << "ERROR Clearing Game!\n";//if we c
 		}
-      gameData.sockfd = sockfd;
-		
 	}
-   return gameData;
+   
+}
+string sync_Board(string board, game_Info gameData){
+		char OboardData[MAXDATASIZE];
+		char boardData[MAXDATASIZE];
+      fillarray(board, boardData);
+      switch(gameData.playerType){//sockets are a 1 way street, cant send and recieve at the same time...
+         case 'B'://host  always sends first
+            send(gameData.sockfd, boardData , MAXDATASIZE, 0);//send board data to client
+				cout << "Waiting for other player...\n";
+            recv(gameData.sockfd, OboardData , MAXDATASIZE, 0);//recieve clients board data
+         break;
+
+         case 'R'://client recieves first
+				cout << "Waiting for other player...\n";
+            recv(gameData.sockfd, OboardData , MAXDATASIZE, 0);//recieve hosts board data
+            send(gameData.sockfd, boardData , MAXDATASIZE, 0);//send board data to host           
+         break;
+
+         default://something went wrong!
+            cout << "ERROR, Unable to determine player type!\n";
+				return "";
+         break;
+      }
+		string returnValue = string(OboardData);
+		return returnValue;
+}
+
+string make_Move(string move, game_Info gameData){
+	
+
+
+
+
 }
 
 /**********************************************************************************************
@@ -112,11 +152,10 @@ game_Info client_Connect(){
    input: none, handles user input itself
    output: game_Info struct with player data
 **********************************************************************************************/
-
 game_Info host_Connect(){
-	int choose = rand() % 10;
+	int choose = rand() % 100 + 4000;
 	char s[INET6_ADDRSTRLEN];
-	int port = defaultPorts[choose];//picks random port
+	int port = choose;//picks random port
 	string sport ;
 	stringstream out;
 	out << port;
@@ -203,7 +242,6 @@ game_Info host_Connect(){
 		inet_ntop(their_addr.ss_family,
 			get_in_addr((struct sockaddr *)&their_addr),
 			s, sizeof s);
-		printf("server: got connection from %s\n", s);
 
 		if (!fork()) { // this is the child process
 			close(sockfd); // child doesn't need the listener
@@ -212,8 +250,10 @@ game_Info host_Connect(){
 			recv(new_fd, recm, MAXDATASIZE,0);
 			int rec = atoi(recm);
 			if(rec == 2){//make sure we receive the 2 from the client and start game
-				cout << "Starting Game!\n";
             gameData.sockfd = new_fd;
+				char opponent[MAXDATASIZE];
+				recv(gameData.sockfd, opponent , MAXDATASIZE, 0);//recieve opponent username
+            gameData.opponent = opponent; //set opponent
 				return gameData;
 			}
 		}
@@ -312,7 +352,7 @@ bool clear_Game(string name){
 		}
 	}
 	writeFile.close();
-	cout << "IT WROTE!\n";
+
    return true;
 }
 	
@@ -352,5 +392,8 @@ bool close_Connection(int sockfd){
 	return true;
 }
 
-
+void fillarray(string value, char * array){
+   array[value.size()] = 0;
+	memcpy(array,value.c_str(),value.size());
+}
 
