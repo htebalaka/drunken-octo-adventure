@@ -27,6 +27,7 @@ struct game_Info{
 	string host;
    string userName;
    string opponent;
+	char playerType;
    int sockfd;
 };
 
@@ -39,9 +40,9 @@ const string gameFile= "connections.txt";
 /*
 get_Game displays list of availible games to join, then prompts the user to select which game to join. Games are Managed by gameFile which is declared at the top of this file.
 */
-
+void fillarray(string value, char * array);
 game_Info get_Game();
-
+string sync_Board(string board, game_Info gameData);
 string recv_f(int sockfd);
 game_Info create_Game(int port, string host, string name, string userName);	//adds a new game to the gameFile	
 bool clear_Game(string name);
