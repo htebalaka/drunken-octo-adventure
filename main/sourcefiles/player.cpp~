@@ -5,7 +5,6 @@
 **************************************************************************/
 #include "../headers/piece.h"
 #include "../headers/player.h"
-#include <iostream>
 #include <string>
 using namespace std;
 
@@ -55,7 +54,7 @@ void player::update(piece * current)
 }
 
 
-void player::print_playerpieces()
+void player::print_playerPieces()
 {
    for (int pos=0;pos<40;pos++){
       cout<<"pos:"<<pos<<" ";
