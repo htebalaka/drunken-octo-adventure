@@ -62,18 +62,14 @@ string getCmdOutput(string cmd)
    // storage for one line of captured output
    char  outpLine[MaxLineLen];
 
-   // redirect the standard output from the
-   command
-      cmd += " 2>&1";
+   // redirect the standard output from thecommand 
+	cmd += " 2>&1";
 
-   // run the command, piping the output to
-   our stream
+   // run the command, piping the output to our stream
       outpStream = popen(cmd.c_str(), "r");
    if (outpStream) {
-      // capture the output, one
-      line at a time,
-           //    appending it to
-           our output string
+      // capture the output, one line at a time,
+           //    appending it to our output string
               while
                  (!feof(outpStream))
                  {
@@ -93,4 +89,3 @@ string getCmdOutput(string cmd)
    }
    return outputString;
 }
-

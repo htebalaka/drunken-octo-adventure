@@ -9,6 +9,9 @@
 #include "../headers/piece.h"
 #include "../headers/globalConstants.h"
 #include "../headers/sockets.h"
+#include "../headers/BoardGUI.h"
+#include "../headers/GUI_Globals.h"
+#include "../headers/BoardGUI_hof.h"
 #include <iostream>
 #include <fstream>
 #include "stdio.h"
@@ -74,12 +77,12 @@ bool action = false;
 	cout << "---------- " << gameData.name << " ---------------\n";
 	cout << "Username: " << gameData.userName << endl;
 	cout << "Opponent: " << gameData.opponent << endl;
-	string positions;
-	cout << "Please enter positions seperated by a space:\n";
-	cin.ignore();
-	getline(cin, positions);
+	using namespace GUI_Globals;
+	init_gui();
+	BoardGUI gui = smart_init_board();
+	auto starting_board = gui.new_game(true);
+	char *positions = flattenVec(starting_board, true);
 	char *opponentBoard = sync_Board(positions,gameData);
-	cout << "Opponent Positions: " << opponentBoard << endl;
 	stop = true;//for debugging only
 
 /**********************************************************************************************
