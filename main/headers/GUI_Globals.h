@@ -5,7 +5,7 @@
 #include <ncurses.h>
 #include <string>
 #include <iostream>
-#include "../headers/BoardGUI.h"
+#include "BoardGUI.h"
 
 namespace GUI_Globals
 {

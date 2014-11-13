@@ -19,9 +19,9 @@ BOARDGUI_O=objectfiles/BoardGUI.o
 .PHONY: clean
 
 
-testBoard:  headers/globalConstants.h headers/piece.h headers/player.h headers/board.h  objectfiles/player.o objectfiles/board.o objectfiles/game.o objectfiles/server.o $(BOARDGUI_O) $(ZENITY_O) $(GUI_GLOBALS_O)
+testBoard:  headers/globalConstants.h headers/piece.h headers/player.h headers/board.h  objectfiles/player.o objectfiles/board.o objectfiles/game.o objectfiles/server.o $(BOARDGUI_O) $(GUI_GLOBALS_O)
 	echo making testBoard
-	$(CXX) $(flags) objectfiles/player.o objectfiles/board.o objectfiles/game.o objectfiles/server.o $(BOARDGUI_O) $(ZENITY_O) $(GUI_GLOBALS_O) -o testboard
+	$(CXX) $(flags) objectfiles/player.o objectfiles/board.o objectfiles/game.o objectfiles/server.o $(BOARDGUI_O) $(GUI_GLOBALS_O) -o testboard
 
 objectfiles/player.o: headers/globalConstants.h headers/piece.h headers/player.h sourcefiles/player.cpp
 	echo making player.o
@@ -49,9 +49,7 @@ ${BOARDGUI_O}: ${BOARDGUI_CPP} ${BOARDGUI_H} ${BOARDGUI_HOF_H}
 ${GUI_GLOBALS_O}: ${GUI_GLOBALS_CPP} ${GUI_GLOBALS_H} ${BOARDGUI_H}
 	@echo "Creating ${GUI_GLOBALS_O}"
 	${CXX} -c ${GUI_GLOBALS_CPP} ${flags} -o ${GUI_GLOBALS_O}
-${ZENITY_O}: ${ZENITY_CPP} ${ZENITY_H}
-	@echo "Creating ${ZENITY_O}"
-	${CXX} -c ${ZENITY_CPP} ${flags} -o ${ZENITY_O}
+
 
 
 clean:
