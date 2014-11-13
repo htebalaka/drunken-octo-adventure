@@ -11,6 +11,7 @@
 #include "../headers/sockets.h"
 #include "../headers/BoardGUI.h"
 #include "../headers/GUI_Globals.h"
+#include "../headers/BoardGUI_hof.h"
 #include <iostream>
 #include <fstream>
 #include "stdio.h"
