@@ -32,6 +32,7 @@ testPlayer:  headers/player.h headers/piece.h objectfiles/player.o testfiles/tes
 	$(CXX) $(flags) objectfiles/player.o testfiles/testPlayer.cpp  -o testPlayer
 
 
-
+clean:
+	rm objectfiles/*.o
 
 
