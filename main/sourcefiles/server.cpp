@@ -113,7 +113,7 @@ game_Info client_Connect(){
 	}
    
 }
-string sync_Board(string board, game_Info gameData){
+char *sync_Board(string board, game_Info gameData){
 		char OboardData[MAXDATASIZE];
 		char boardData[MAXDATASIZE];
       fillarray(board, boardData);
@@ -135,8 +135,7 @@ string sync_Board(string board, game_Info gameData){
 				return "";
          break;
       }
-		string returnValue = string(OboardData);
-		return returnValue;
+		return OboardData;
 }
 
 string make_Move(string move, game_Info gameData){

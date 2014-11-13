@@ -78,7 +78,7 @@ bool action = false;
 	cout << "Please enter positions seperated by a space:\n";
 	cin.ignore();
 	getline(cin, positions);
-	string opponentBoard = sync_Board(positions,gameData);
+	char *opponentBoard = sync_Board(positions,gameData);
 	cout << "Opponent Positions: " << opponentBoard << endl;
 	stop = true;//for debugging only
 
