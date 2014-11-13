@@ -1,0 +1,16 @@
+<to describe the set of acceptance tests to be used as the final judgement criteria>
+* a detailed description of the final intended product:
+*   all features
+*   functionality
+*   constraints
+*   interfaces
+* the precise set of acceptance tests to be used, detailing
+*   how each test corresponds to the product description above
+*   specifying the means by which /each/ test will be applied and evaluated
+*     for success/failure
+
+The final product should have the following features:
+* Network play, to allow games to be played between multiple computers over the CSCI otter network.
+* Automated test-suites, which can consistently emulate a game deterministically, and can record games that are played to generate new test data for this purpose
+* GUI interface with color support and a chat window within the game itself, as well as a start-menu to create and join games with other players
+The acceptance tests for the game will consist of playing a game successfully over the CSCI network from start to finish, while the acceptance tests for the test-suites themselves will consist of successfully replaying the game with the same result. The GUI features will be tested based on whether they are in fact included in the final product.
