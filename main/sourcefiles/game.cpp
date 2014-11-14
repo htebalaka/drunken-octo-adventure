@@ -82,8 +82,9 @@ bool action = false;
 	using namespace GUI_Globals;
 	init_gui();
 	BoardGUI gui = smart_init_board();
-	auto starting_board = gui.new_game(true);
-	char *positions = flattenVec(starting_board, true);
+   bool isBottomPlayer = gameData.playerType == 'R';
+	auto starting_board = gui.new_game(isBottomPlayer);
+	char *positions = flattenVec(starting_board, isBottomPlayer);
 	char *opponentBoard = sync_Board(positions,gameData);
 	stop = true;//for debugging only
 
