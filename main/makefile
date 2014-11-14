@@ -18,8 +18,10 @@ BOARDGUI_H=headers/BoardGUI.h
 BOARDGUI_CPP=sourcefiles/BoardGUI.cpp
 BOARDGUI_O=objectfiles/BoardGUI.o
 
-.PHONY: clean
+GUI_CPP=sourcefiles/main.cpp
 
+.PHONY: clean
+.PHONY: gui
 
 testBoard:  headers/globalConstants.h headers/piece.h headers/player.h headers/board.h  objectfiles/player.o objectfiles/board.o objectfiles/game.o objectfiles/server.o $(BOARDGUI_O) $(GUI_GLOBALS_O) ${BOARDGUI_HOF_O}
 	echo making testBoard
@@ -58,4 +60,7 @@ ${GUI_GLOBALS_O}: ${GUI_GLOBALS_CPP} ${GUI_GLOBALS_H} ${BOARDGUI_H}
 clean:
 	rm objectfiles/*.o
 
+gui: ${GUI_CPP} ${BOARDGUI_O} ${GUI_GLOBALS_O} ${BOARDGUI_HOF_O}
+	@echo "creating gui test script"
+	${CXX} ${GUI_CPP} ${BOARDGUI_O} ${GUI_GLOBALS_O} ${BOARDGUI_HOF_O} ${flags} -o gui.out
 

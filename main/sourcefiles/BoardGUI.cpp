@@ -92,6 +92,11 @@ vector< vector<char> > BoardGUI::new_game(bool isBottomPlayer)
    vector< vector<chtype> > startRegion (4, vector<chtype> (10, ' '));
    vector<chtype> pieces {'B','B','B','B','B','B','F','S','9','9','9','9','9','9','9','9','8','8','8','8','8','7','7','7','7','6','6','6','6','5','5','5','5','4','4','4','3','3','2','1'};
 
+   // set the cursor into the valid region
+   cursorX = 5;
+   cursorY = isBottomPlayer ? 7 : 2;
+   b_refresh();
+
    // add color to the vector of characters
    chtype color = (isBottomPlayer) ? RED : BLUE;
    for (int i=0; i<pieces.size(); ++i)

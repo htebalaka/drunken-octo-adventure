@@ -5,15 +5,17 @@
 
 #include "../headers/BoardGUI.h"
 #include "../headers/GUI_Globals.h"
+#include "../headers/BoardGUI_hof.h"
 
 using namespace GUI_Globals;
+using namespace BoardGUI_hof;
 
 int main()
 {
    init_gui();
    BoardGUI gui = smart_init_board();
    auto starting_board = gui.new_game(true);
-   while (1)
+   /*while (1)
    {  gui.wait_for_player(
          // pickupPredicate
          // placementPredicate
@@ -24,7 +26,7 @@ int main()
          // isRed
          // getChar
          );
-   }
+   }*/
    exit_gui(0);
    return 0;
 }
