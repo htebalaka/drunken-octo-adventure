@@ -18,6 +18,7 @@
 
 using namespace std;
 using namespace GUI_Globals;
+using namespace BoardGUI_hof;
 
 void BoardGUI::wait_for_player(
       function<bool (int,int)> pickupPredicate,

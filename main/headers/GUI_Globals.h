@@ -21,7 +21,6 @@ namespace GUI_Globals
    void exit_gui_loudly(std::string format);
    void assert(bool condition, std::string format);
    BoardGUI smart_init_board();
-   string getCmdOutput(string);
 }
 
 #endif

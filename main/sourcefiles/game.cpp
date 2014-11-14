@@ -17,13 +17,14 @@
 #include "stdio.h"
 
 using namespace std;
+using namespace BoardGUI_hof;
+using namespace GUI_Globals;
 
 /**********************************************************************************************
 *                       function prototypes
 **********************************************************************************************/
 
 void won(bool whoWon);
-char *flattenVec(std::vector< std::vector<char> > vec, bool isBottomPlayer);
 
 int main()
 {

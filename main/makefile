@@ -11,6 +11,8 @@ ZENITY_CPP=sourcefiles/Zenity.cpp
 ZENITY_O=objectfiles/Zenity.o
 
 BOARDGUI_HOF_H=headers/BoardGUI_hof.h
+BOARDGUI_HOF_CPP=sourcefiles/BoardGUI_hof.cpp
+BOARDGUI_HOF_O=objectfiles/BoardGUI_hof.o
 
 BOARDGUI_H=headers/BoardGUI.h
 BOARDGUI_CPP=sourcefiles/BoardGUI.cpp
@@ -19,9 +21,9 @@ BOARDGUI_O=objectfiles/BoardGUI.o
 .PHONY: clean
 
 
-testBoard:  headers/globalConstants.h headers/piece.h headers/player.h headers/board.h  objectfiles/player.o objectfiles/board.o objectfiles/game.o objectfiles/server.o $(BOARDGUI_O) $(GUI_GLOBALS_O)
+testBoard:  headers/globalConstants.h headers/piece.h headers/player.h headers/board.h  objectfiles/player.o objectfiles/board.o objectfiles/game.o objectfiles/server.o $(BOARDGUI_O) $(GUI_GLOBALS_O) ${BOARDGUI_HOF_O}
 	echo making testBoard
-	$(CXX) $(flags) objectfiles/player.o objectfiles/board.o objectfiles/game.o objectfiles/server.o $(BOARDGUI_O) $(GUI_GLOBALS_O) -o testboard
+	$(CXX) $(flags) objectfiles/player.o objectfiles/board.o objectfiles/game.o objectfiles/server.o $(BOARDGUI_O) $(GUI_GLOBALS_O) ${BOARDGUI_HOF_O} -o testboard
 
 objectfiles/player.o: headers/globalConstants.h headers/piece.h headers/player.h sourcefiles/player.cpp
 	echo making player.o
@@ -46,11 +48,12 @@ testPlayer:  headers/player.h headers/piece.h objectfiles/player.o testfiles/tes
 ${BOARDGUI_O}: ${BOARDGUI_CPP} ${BOARDGUI_H} ${BOARDGUI_HOF_H}
 	@echo "Creating ${BOARDGUI_O}"
 	${CXX} -c ${BOARDGUI_CPP} ${flags} -o ${BOARDGUI_O}
+${BOARDGUI_HOF_O}: ${BOARDGUI_HOF_CPP} ${BOARDGUI_HOF_H}
+	@echo "Creating ${BOARDGUI_HOF_H}"
+	${CXX} -c ${BOARDGUI_HOF_CPP} ${flags} -o ${BOARDGUI_HOF_O}
 ${GUI_GLOBALS_O}: ${GUI_GLOBALS_CPP} ${GUI_GLOBALS_H} ${BOARDGUI_H}
 	@echo "Creating ${GUI_GLOBALS_O}"
 	${CXX} -c ${GUI_GLOBALS_CPP} ${flags} -o ${GUI_GLOBALS_O}
-
-
 
 clean:
 	rm objectfiles/*.o
