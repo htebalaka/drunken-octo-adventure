@@ -19,6 +19,7 @@
 #include <netinet/in.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <unistd.h>
 #include"../headers/sockets.h"
 #include "../headers/globalConstants.h"
 using namespace std;
@@ -61,8 +62,6 @@ game_Info client_Connect(){
 	out << gameData.port;
 	sport = out.str();
 	string opponent = gameData.userName; //the opponents name is what is currently in gameData
-	gameData.userName = userName; //set userName
-	gameData.opponent = opponent;
 	int sockfd;  
 	struct addrinfo hints, *servinfo, *p;
 	int rv;
@@ -95,24 +94,28 @@ game_Info client_Connect(){
 			s, sizeof s);
 
 	freeaddrinfo(servinfo); // all done with this structure
-
+	char uname[MAXDATASIZE];
+	fillarray(userName, uname);
+	send(sockfd, uname, MAXDATASIZE, 0);
 	char recm[MAXDATASIZE];
 	recv(sockfd, recm, MAXDATASIZE, 0 );
-	int rec = atoi(recm);
-	if(rec == 1){
-		send(sockfd, "2", MAXDATASIZE, 0);//confirm connection by sending 2.
-		char userName[MAXDATASIZE];
- 		fillarray(gameData.userName, userName);
-      send(sockfd, userName , MAXDATASIZE, 0);//send username to host
+	if(recm[0] == 'Y'){
 		if(clear_Game(gameData.name)){//clear the game from the pending game list and start.
+			gameData.userName = userName;
+			gameData.opponent = opponent;
 			gameData.sockfd = sockfd;
-			return gameData;
 		}else{
 			cout << "ERROR Clearing Game!\n";//if we c
 		}
+	}else{
+		cout << "Host declined your game request, Please Try again\n";
+		close(sockfd);
+		exit(EXIT_FAILURE);
 	}
-   
+	return gameData;
 }
+
+
 char *sync_Board(string board, game_Info gameData){
 		char OboardData[MAXDATASIZE];
 		char boardData[MAXDATASIZE];
@@ -153,30 +156,39 @@ string make_Move(string move, game_Info gameData){
 **********************************************************************************************/
 game_Info host_Connect(){
 	int choose = rand() % 100 + 4000;
-	char s[INET6_ADDRSTRLEN];
 	int port = choose;//picks random port
-	string sport ;
-	stringstream out;
-	out << port;
-	sport = out.str();
    cout << "Please Enter a Username:\n";
    string userName;
    cin >> userName;
 	cout << "Please Enter a Name for your Game:\n";
 	string name;
 	cin >> name;
+   char hostname[128];
+   gethostname(hostname, 127);
+   game_Info gameData = create_Game(port,hostname,name, userName); 
+	int new_fd = -1;
+	new_fd = wait_Game(gameData, false);
+	while(new_fd == -1){    
+		new_fd = wait_Game(gameData, true);
+	}
+	gameData.sockfd = new_fd;
+	return gameData;
+	
+}
 
+int wait_Game(game_Info &gameData, bool reload){
 	int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
+	char s[INET6_ADDRSTRLEN];
 	struct addrinfo hints, *servinfo, *p;
 	struct sockaddr_storage their_addr; // connector's address information
 	socklen_t sin_size;
 	struct sigaction sa;
+	string sport ;
+	stringstream out;
+	out << gameData.port;
+	sport = out.str();
 	int yes=1;
 	int rv;
-        char hostname[128];
-        gethostname(hostname, 127);
-	
-   game_Info gameData = create_Game(port,hostname,name, userName);      
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
@@ -185,36 +197,38 @@ game_Info host_Connect(){
 	if ((rv = getaddrinfo(NULL, sport.c_str(), &hints, &servinfo)) != 0) {
 		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
 	}
-
-	// loop through all the results and bind to the first we can
-	for(p = servinfo; p != NULL; p = p->ai_next) {
-		if ((sockfd = socket(p->ai_family, p->ai_socktype,
-				p->ai_protocol)) == -1) {
-			perror("server: socket");
-			continue;
+		// loop through all the results and bind to the first we can
+		if(!reload){
+		for(p = servinfo; p != NULL; p = p->ai_next) {
+			if ((sockfd = socket(p->ai_family, p->ai_socktype,
+					p->ai_protocol)) == -1) {
+				perror("server: socket");
+				continue;
+			}
+	
+			if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes,
+					sizeof(int)) == -1) {
+				perror("setsockopt");
+				exit(1);
+			}
+	
+			if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
+				close(sockfd);
+				perror("server: bind");
+				continue;
+			}
+	
+			break;
 		}
-
-		if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes,
-				sizeof(int)) == -1) {
-			perror("setsockopt");
-			exit(1);
+	
+		if (p == NULL)  {
+			fprintf(stderr, "server: failed to bind\n");
 		}
-
-		if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
-			close(sockfd);
-			perror("server: bind");
-			continue;
+		}else{
+			sockfd = gameData.sockfd;
 		}
-
-		break;
-	}
-
-	if (p == NULL)  {
-		fprintf(stderr, "server: failed to bind\n");
-	}
-
 	freeaddrinfo(servinfo); // all done with this structure
-
+	char action = 'q';
 	if (listen(sockfd, BACKLOG) == -1) {
 		perror("listen");
 		exit(1);
@@ -227,6 +241,7 @@ game_Info host_Connect(){
 		perror("sigaction");
 		exit(1);
 	}
+
 
 	printf("server: waiting for connections...\n");
 
@@ -243,21 +258,38 @@ game_Info host_Connect(){
 			s, sizeof s);
 
 		if (!fork()) { // this is the child process
-			close(sockfd); // child doesn't need the listener
-			send(new_fd, "1", MAXDATASIZE, 0);
-			char recm[MAXDATASIZE];
-			recv(new_fd, recm, MAXDATASIZE,0);
-			int rec = atoi(recm);
-			if(rec == 2){//make sure we receive the 2 from the client and start game
-            gameData.sockfd = new_fd;
-				char opponent[MAXDATASIZE];
-				recv(gameData.sockfd, opponent , MAXDATASIZE, 0);//recieve opponent username
-            gameData.opponent = opponent; //set opponent
-				return gameData;
-			}
+			char opponent[MAXDATASIZE];
+			recv(new_fd, opponent, MAXDATASIZE,0);
+			cout << "Accept Game request from: " << opponent << "? (Y,N)\n";
+			
+			cin >> action;
+			bool trip = false;
+			do{
+				
+				switch (action){
+					case 'Y':
+						gameData.opponent = opponent;
+						close(sockfd);
+						send(new_fd,"Y", MAXDATASIZE, 0);
+						trip = true;
+						return new_fd;
+					break;
+					case 'N':
+						send(new_fd, "N", MAXDATASIZE, 0);
+						gameData.sockfd = sockfd;
+						close(new_fd);
+						sleep(1);
+						return -1;
+						trip = true;
+					break;
+					default:
+						cout << "Invalid Response, Try Again!\n";
+					break;
+				}
+			}while(trip == false);
 		}
-	}	
-}
+	}
+}	
 /**********************************************************************************************
    get_Game
    Fetch all games waiting for a player 2, Prompt user to select one

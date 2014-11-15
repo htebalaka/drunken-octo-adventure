@@ -17,7 +17,7 @@ BOARDGUI_HOF_O=objectfiles/BoardGUI_hof.o
 BOARDGUI_H=headers/BoardGUI.h
 BOARDGUI_CPP=sourcefiles/BoardGUI.cpp
 BOARDGUI_O=objectfiles/BoardGUI.o
-
+SERVER_CPP = sourcefiles/server.cpp
 GUI_CPP=sourcefiles/main.cpp
 
 .PHONY: clean
@@ -39,9 +39,9 @@ objectfiles/game.o: headers/globalConstants.h headers/piece.h headers/player.h h
 	echo making game.o
 	$(CXX) $(flags) sourcefiles/game.cpp -c -o objectfiles/game.o
 
-objectfiles/server.o:  sourcefiles/server.cpp headers/sockets.h headers/globalConstants.h
+objectfiles/server.o:  ${SERVER_CPP} headers/sockets.h headers/globalConstants.h
 	echo making server.o
-	$(CXX) $(flags) sourcefiles/server.cpp -c -o objectfiles/server.o
+	$(CXX) $(flags) ${SERVER_CPP} -c -o objectfiles/server.o
 
 testPlayer:  headers/player.h headers/piece.h objectfiles/player.o testfiles/testPlayer.cpp
 	echo making testPlayer driver

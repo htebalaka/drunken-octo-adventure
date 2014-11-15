@@ -17,13 +17,14 @@
 #include "stdio.h"
 
 using namespace std;
+using namespace BoardGUI_hof;
+using namespace GUI_Globals;
 
 /**********************************************************************************************
 *                       function prototypes
 **********************************************************************************************/
 
 void won(bool whoWon);
-char *flattenVec(std::vector< std::vector<char> > vec, bool isBottomPlayer);
 
 int main()
 {
@@ -81,8 +82,9 @@ bool action = false;
 	using namespace GUI_Globals;
 	init_gui();
 	BoardGUI gui = smart_init_board();
-	auto starting_board = gui.new_game(true);
-	char *positions = flattenVec(starting_board, true);
+   bool isBottomPlayer = gameData.playerType == 'R';
+	auto starting_board = gui.new_game(false);
+	char *positions = flattenVec(starting_board, false);
 	char *opponentBoard = sync_Board(positions,gameData);
 	stop = true;//for debugging only
 
@@ -156,24 +158,4 @@ void won(bool whoWon)
    else cout<<"Blue won!\n";
 }
 
-char *flattenVec(std::vector< std::vector<char> > vec, bool isBottomPlayer)
-{
-   char rvalue[41];
-   rvalue[0] = isBottomPlayer ? 'R' : 'B';
-   int i = 1;
-   for (auto vec2 : vec)
-   {
-      for (auto e : vec2)
-      {  
-         if (i==41)
-         {
-            return rvalue;
-         }
-         else
-         {
-            rvalue[i] = e;
-         }
-      }
-   }
-}
 

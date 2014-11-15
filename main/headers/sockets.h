@@ -40,6 +40,7 @@ const string gameFile= "connections.txt";
 /*
 get_Game displays list of availible games to join, then prompts the user to select which game to join. Games are Managed by gameFile which is declared at the top of this file.
 */
+int wait_Game(game_Info &gameData, bool reload);
 void fillarray(string value, char * array);
 game_Info get_Game();
 char *sync_Board(string board, game_Info gameData);
