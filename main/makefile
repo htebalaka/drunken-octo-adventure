@@ -2,6 +2,8 @@
 CXX=g++
 flags=-lpanel -lncurses -std=c++11
 
+GLOBALS=headers/globalConstants.h
+
 GUI_GLOBALS_H=headers/GUI_Globals.h
 GUI_GLOBALS_CPP=sourcefiles/GUI_Globals.cpp
 GUI_GLOBALS_O=objectfiles/GUI_Globals.o
@@ -17,42 +19,62 @@ BOARDGUI_HOF_O=objectfiles/BoardGUI_hof.o
 BOARDGUI_H=headers/BoardGUI.h
 BOARDGUI_CPP=sourcefiles/BoardGUI.cpp
 BOARDGUI_O=objectfiles/BoardGUI.o
-SERVER_CPP = sourcefiles/server.cpp
+
+SERVER_CPP=sourcefiles/server.cpp
+SERVER_H=headers/sockets.h
+SERVER_O=objectfiles/server.o
+
+PIECE_H=headers/piece.h
+
+PLAYER_CPP=sourcefiles/player.cpp
+PLAYER_H=headers/player.h
+PLAYER_O=objectfiles/player.o
+
+BOARD_CPP=sourcefiles/board.cpp
+BOARD_H=headers/board.h
+BOARD_O=objectfiles/board.o
+
 GUI_CPP=sourcefiles/main.cpp
+
+GAME_CPP = sourcefiles/game.cpp
+GAME_O=objectfiles/game.o
+
 
 .PHONY: clean
 .PHONY: gui
 
-testBoard:  headers/globalConstants.h headers/piece.h headers/player.h headers/board.h  objectfiles/player.o objectfiles/board.o objectfiles/game.o objectfiles/server.o $(BOARDGUI_O) $(GUI_GLOBALS_O) ${BOARDGUI_HOF_O}
+testBoard: ${PLAYER_O} ${BOARD_O} ${GAME_O} ${SERVER_O} $(BOARDGUI_O) $(GUI_GLOBALS_O) ${BOARDGUI_HOF_O}
 	echo making testBoard
-	$(CXX) $(flags) objectfiles/player.o objectfiles/board.o objectfiles/game.o objectfiles/server.o $(BOARDGUI_O) $(GUI_GLOBALS_O) ${BOARDGUI_HOF_O} -o testboard
+	$(CXX) $(flags) ${PLAYER_O} ${BOARD_O} ${GAME_O} ${SERVER_O} $(BOARDGUI_O) $(GUI_GLOBALS_O) ${BOARDGUI_HOF_O} -o testboard
 
-objectfiles/player.o: headers/globalConstants.h headers/piece.h headers/player.h sourcefiles/player.cpp
-	echo making player.o
-	$(CXX) $(flags) sourcefiles/player.cpp -c -o objectfiles/player.o
+${PLAYER_O}: ${GLOBALS} ${PIECE_H} ${PLAYER_H} ${PLAYER_CPP}
+	echo making ${PLAYER_O}
+	$(CXX) $(flags) ${PLAYER_CPP} -c -o ${PLAYER_O}
 
-objectfiles/board.o:  headers/globalConstants.h headers/piece.h headers/player.h headers/board.h sourcefiles/board.cpp
-	echo making board.o
-	$(CXX) $(flags) sourcefiles/board.cpp -c -o objectfiles/board.o
+${BOARD_O}: ${GLOBALS} ${PIECE_H} ${PLAYER_H} ${BOARD_H} ${BOARD_CPP}
+	echo making ${BOARD_O}
+	$(CXX) $(flags) ${BOARD_CPP} -c -o ${BOARD_O}
 
-objectfiles/game.o: headers/globalConstants.h headers/piece.h headers/player.h headers/board.h  sourcefiles/game.cpp headers/sockets.h
-	echo making game.o
-	$(CXX) $(flags) sourcefiles/game.cpp -c -o objectfiles/game.o
+${GAME_O}: ${GLOBALS} ${PIECE_H} ${PLAYER_H} ${BOARD_H} ${GAME_CPP} ${SOCKETS_H}
+	echo making ${GAME_O}
+	$(CXX) $(flags) ${GAME_CPP} -c -o ${GAME_O}
 
-objectfiles/server.o:  ${SERVER_CPP} headers/sockets.h headers/globalConstants.h
-	echo making server.o
-	$(CXX) $(flags) ${SERVER_CPP} -c -o objectfiles/server.o
+${SERVER_O}: ${SERVER_CPP} ${SERVER_H} ${GLOBALS}
+	echo making ${SERVER_O}
+	$(CXX) $(flags) ${SERVER_CPP} -c -o ${SERVER_O}
 
-testPlayer:  headers/player.h headers/piece.h objectfiles/player.o testfiles/testPlayer.cpp
+testPlayer: ${PLAYER_O}
 	echo making testPlayer driver
-	$(CXX) $(flags) objectfiles/player.o testfiles/testPlayer.cpp  -o testPlayer
+	$(CXX) $(flags) ${PLAYER_O} -o testPlayer
 
 ${BOARDGUI_O}: ${BOARDGUI_CPP} ${BOARDGUI_H} ${BOARDGUI_HOF_H}
 	@echo "Creating ${BOARDGUI_O}"
 	${CXX} -c ${BOARDGUI_CPP} ${flags} -o ${BOARDGUI_O}
+
 ${BOARDGUI_HOF_O}: ${BOARDGUI_HOF_CPP} ${BOARDGUI_HOF_H}
 	@echo "Creating ${BOARDGUI_HOF_H}"
 	${CXX} -c ${BOARDGUI_HOF_CPP} ${flags} -o ${BOARDGUI_HOF_O}
+
 ${GUI_GLOBALS_O}: ${GUI_GLOBALS_CPP} ${GUI_GLOBALS_H} ${BOARDGUI_H}
 	@echo "Creating ${GUI_GLOBALS_O}"
 	${CXX} -c ${GUI_GLOBALS_CPP} ${flags} -o ${GUI_GLOBALS_O}

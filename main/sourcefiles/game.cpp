@@ -17,8 +17,8 @@
 #include "stdio.h"
 
 using namespace std;
-using namespace BoardGUI_hof;
 using namespace GUI_Globals;
+using namespace BoardGUI_hof;
 
 /**********************************************************************************************
 *                       function prototypes
@@ -84,7 +84,7 @@ bool action = false;
 	BoardGUI gui = smart_init_board();
    bool isBottomPlayer = gameData.playerType == 'R';
 	auto starting_board = gui.new_game(isBottomPlayer);
-	char *positions = flattenVec(starting_board, isBottomPlayer);
+	char *positions = BoardGUI_hof::flattenVec(starting_board, isBottomPlayer);
 	char *opponentBoard = sync_Board(positions,gameData);
    exit_gui(0);
 	stop = true;//for debugging only
@@ -133,7 +133,7 @@ bool action = false;
          // update the board - the board object will update the players piece array
 
          // this function gets called to give control to the current player
-         gui.wait_for_player(
+         /*gui.wait_for_player(
                std::function<bool (int,int)>[](int y, int x)
                {
                   // this gets executed to check whether we can pickup a piece
@@ -168,7 +168,7 @@ bool action = false;
          // update the board
          game.make_move(row,column,newRow,newColumn); 
 
-         gui.refresh_board(
+         gui.refresh_board(*/
          // if either player has won exit loop
       }  // exit game play loop
       won(whoWon);  //  send who won the game to the end of game function

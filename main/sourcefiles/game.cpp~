@@ -17,8 +17,8 @@
 #include "stdio.h"
 
 using namespace std;
-using namespace BoardGUI_hof;
 using namespace GUI_Globals;
+using namespace BoardGUI_hof;
 
 /**********************************************************************************************
 *                       function prototypes
@@ -83,9 +83,10 @@ bool action = false;
 	init_gui();
 	BoardGUI gui = smart_init_board();
    bool isBottomPlayer = gameData.playerType == 'R';
-	auto starting_board = gui.new_game(false);
-	char *positions = flattenVec(starting_board, false);
+	auto starting_board = gui.new_game(isBottomPlayer);
+	char *positions = flattenVec(starting_board, isBottomPlayer);
 	char *opponentBoard = sync_Board(positions,gameData);
+   exit_gui(0);
 	stop = true;//for debugging only
 
 /**********************************************************************************************
@@ -130,11 +131,44 @@ bool action = false;
          //  check to see if the red player has won or if red has quit the game 
          //  if not get the blue players move
          // update the board - the board object will update the players piece array
+
+         // this function gets called to give control to the current player
+         /*gui.wait_for_player(
+               std::function<bool (int,int)>[](int y, int x)
+               {
+                  // this gets executed to check whether we can pickup a piece
+               },
+               std::function<bool (int,int,int,int)>[](int toY, int toX, int fromY, int fromX)
+               {
+                  // this gets executed to check whether we can move a piece
+               },
+               std::function<void (int,int,int,int)>[](int toY, int toX, int fromY, int fromX)
+               {
+                  // this gets executed when we make a move
+               });
+         // this function gets called to give control to the player across the
+         // network
+         gui.refresh_board(
+               std::function<bool (int,int)>[](int y, int x)
+               {
+                  // this gets executed to test whether a location is empty
+               },
+               std::function<bool (int,int)>[](int y, int x)
+               {
+                  // this gets executed to see if a non-empty location is red
+               },
+               std::function<char (int,int)>[](int y, int x)
+               {
+                  // this gets executed to see what character should go in what
+                  // location
+               });
          game.make_move(row,column,newRow,newColumn);
          // check to see if the blue player has won or if blue has quit the game
          // if not get the red players move 
          // update the board
          game.make_move(row,column,newRow,newColumn); 
+
+         gui.refresh_board(*/
          // if either player has won exit loop
       }  // exit game play loop
       won(whoWon);  //  send who won the game to the end of game function
@@ -144,7 +178,7 @@ bool action = false;
 /**********************************************************************************************
 *                         enter shut down procedures                      
 **********************************************************************************************/
-
+   exit_gui(0);
    return 0;
 }
 
