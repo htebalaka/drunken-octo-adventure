@@ -9,6 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <time.h>
 #include <cmath>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,8 +24,6 @@
 #include"../headers/sockets.h"
 #include "../headers/globalConstants.h"
 using namespace std;
-
-
 /**********************************************************************************************
       Gets Ip address data for socket
       self contained, not to be used out of server.cpp
@@ -34,10 +33,8 @@ void *get_in_addr(struct sockaddr *sa)//get socket address IPv4 or IPv6
 	if (sa->sa_family == AF_INET) {
 		return &(((struct sockaddr_in*)sa)->sin_addr);
 	}
-
 	return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
-
 /**********************************************************************************************
    Socket handler
 **********************************************************************************************/
@@ -45,7 +42,6 @@ void sigchld_handler(int s)
 {
 	while(waitpid(-1, NULL, WNOHANG) > 0);
 }
-
 /**********************************************************************************************
    client_Connect, connects the client to an availible game.
    Input: none, Fetches data from user itself, could be changed to receive userdata in
@@ -69,11 +65,9 @@ game_Info client_Connect(){
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-
 	if ((rv = getaddrinfo((gameData.host).c_str(), sport.c_str(), &hints, &servinfo)) != 0) {
 		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
 	}
-
 	// loop through all the results and connect to the first we can
 	for(p = servinfo; p != NULL; p = p->ai_next) {
 		if ((sockfd = socket(p->ai_family, p->ai_socktype,
@@ -81,18 +75,14 @@ game_Info client_Connect(){
 			perror("client: socket");
 			continue;
 		}
-
 		if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
 			close(sockfd);
 			perror("client: connect");
 			continue;
 		}
-
 		break;
 	}
-	inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),
-			s, sizeof s);
-
+	inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),s, sizeof s);
 	freeaddrinfo(servinfo); // all done with this structure
 	char uname[MAXDATASIZE];
 	fillarray(userName, uname);
@@ -114,47 +104,48 @@ game_Info client_Connect(){
 	}
 	return gameData;
 }
-
-
+/**********************************************************************************************
+  sync_Board, Passes starting board data to each player respectively
+   input: players board data, game_Info struct
+   output: opponents board data
+**********************************************************************************************/
 char *sync_Board(string board, game_Info gameData){
-		char OboardData[MAXDATASIZE];
-		char boardData[MAXDATASIZE];
-      fillarray(board, boardData);
-      switch(gameData.playerType){//sockets are a 1 way street, cant send and recieve at the same time...
-         case 'B'://host  always sends first
-            send(gameData.sockfd, boardData , MAXDATASIZE, 0);//send board data to client
-				cout << "Waiting for other player...\n";
-            recv(gameData.sockfd, OboardData , MAXDATASIZE, 0);//recieve clients board data
+	char OboardData[MAXDATASIZE];
+	char boardData[MAXDATASIZE];
+   fillarray(board, boardData);
+   switch(gameData.playerType){//sockets are a 1 way street, cant send and recieve at the same time...
+      case 'B'://host  always sends first
+         send(gameData.sockfd, boardData , MAXDATASIZE, 0);//send board data to client
+			cout << "Waiting for other player...\n";
+         recv(gameData.sockfd, OboardData , MAXDATASIZE, 0);//recieve clients board data
+      break;
+      case 'R'://client recieves first
+			cout << "Waiting for other player...\n";
+         recv(gameData.sockfd, OboardData , MAXDATASIZE, 0);//recieve hosts board data
+         send(gameData.sockfd, boardData , MAXDATASIZE, 0);//send board data to host           
+      break;
+      default://something went wrong!
+         cout << "ERROR, Unable to determine player type!\n";
+   		return "";
          break;
-
-         case 'R'://client recieves first
-				cout << "Waiting for other player...\n";
-            recv(gameData.sockfd, OboardData , MAXDATASIZE, 0);//recieve hosts board data
-            send(gameData.sockfd, boardData , MAXDATASIZE, 0);//send board data to host           
-         break;
-
-         default://something went wrong!
-            cout << "ERROR, Unable to determine player type!\n";
-				return "";
-         break;
-      }
-		return OboardData;
+   }
+	return OboardData;
 }
-
+/**********************************************************************************************
+  make_Move, Passes move data to other player, returns other players move
+   input: move data, and game_Info struct
+   output: ?
+**********************************************************************************************/
 string make_Move(string move, game_Info gameData){
-	
-
-
-
 
 }
-
 /**********************************************************************************************
    host_Connect, creates a new game and waits for a player 2
    input: none, handles user input itself
    output: game_Info struct with player data
 **********************************************************************************************/
 game_Info host_Connect(){
+	srand (time(NULL));
 	int choose = rand() % 100 + 4000;
 	int port = choose;//picks random port
    cout << "Please Enter a Username:\n";
@@ -167,15 +158,18 @@ game_Info host_Connect(){
    gethostname(hostname, 127);
    game_Info gameData = create_Game(port,hostname,name, userName); 
 	int new_fd = -1;
-	new_fd = wait_Game(gameData, false);
+	new_fd = wait_Game(gameData, false);//first pass we must bind the socket
 	while(new_fd == -1){    
-		new_fd = wait_Game(gameData, true);
+		new_fd = wait_Game(gameData, true);//if we must do another pass skip binding
 	}
 	gameData.sockfd = new_fd;
 	return gameData;
 	
 }
-
+/**********************************************************************************************
+   wait_Game: Listen for client, connect if accepted, if client is denied return -1;
+	input: reference to game_Info struct, boolean to determine if binding is needed
+**********************************************************************************************/
 int wait_Game(game_Info &gameData, bool reload){
 	int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
 	char s[INET6_ADDRSTRLEN];
@@ -193,21 +187,18 @@ int wait_Game(game_Info &gameData, bool reload){
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE; // use my IP
-
 	if ((rv = getaddrinfo(NULL, sport.c_str(), &hints, &servinfo)) != 0) {
 		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
 	}
 		// loop through all the results and bind to the first we can
-		if(!reload){
+	if(!reload){
 		for(p = servinfo; p != NULL; p = p->ai_next) {
 			if ((sockfd = socket(p->ai_family, p->ai_socktype,
 					p->ai_protocol)) == -1) {
 				perror("server: socket");
 				continue;
 			}
-	
-			if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes,
-					sizeof(int)) == -1) {
+			if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
 				perror("setsockopt");
 				exit(1);
 			}
@@ -217,23 +208,20 @@ int wait_Game(game_Info &gameData, bool reload){
 				perror("server: bind");
 				continue;
 			}
-	
 			break;
 		}
-	
 		if (p == NULL)  {
 			fprintf(stderr, "server: failed to bind\n");
 		}
-		}else{
-			sockfd = gameData.sockfd;
-		}
+	}else{
+		sockfd = gameData.sockfd;
+	}
 	freeaddrinfo(servinfo); // all done with this structure
 	char action = 'q';
 	if (listen(sockfd, BACKLOG) == -1) {
 		perror("listen");
 		exit(1);
 	}
-
 	sa.sa_handler = sigchld_handler; // reap all dead processes
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;
@@ -241,10 +229,7 @@ int wait_Game(game_Info &gameData, bool reload){
 		perror("sigaction");
 		exit(1);
 	}
-
-
 	printf("server: waiting for connections...\n");
-
 	while(1) {  // main accept() loop
 		sin_size = sizeof their_addr;
 		new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
@@ -252,20 +237,16 @@ int wait_Game(game_Info &gameData, bool reload){
 			perror("accept");
 			continue;
 		}
-
 		inet_ntop(their_addr.ss_family,
-			get_in_addr((struct sockaddr *)&their_addr),
-			s, sizeof s);
-
+		get_in_addr((struct sockaddr *)&their_addr),
+		s, sizeof s);
 		if (!fork()) { // this is the child process
 			char opponent[MAXDATASIZE];
 			recv(new_fd, opponent, MAXDATASIZE,0);
 			cout << "Accept Game request from: " << opponent << "? (Y,N)\n";
-			
 			cin >> action;
 			bool trip = false;
 			do{
-				
 				switch (action){
 					case 'Y':
 						gameData.opponent = opponent;
@@ -333,14 +314,13 @@ game_Info get_Game(){
 	cout << "Enter Game: ";//require user to enter desired game number
 	int dGame;
 	do{
-	cin >> dGame;
-	if((dGame < 0) || (dGame > (numGames))){//make sure selection is valid
-		cout << "**ERROR Invalid Game Selection!\nPlease Enter Game: ";
-	}
+		cin >> dGame;
+		if((dGame < 0) || (dGame > (numGames))){//make sure selection is valid
+			cout << "**ERROR Invalid Game Selection!\nPlease Enter Game: ";
+		}
 	}while((dGame < 0) || (dGame > (numGames-1)));
 	return games[dGame];
 }
-
 /**********************************************************************************************
    clear Game, removes game from list of availible games
    input: name of game to clear as a string
@@ -370,7 +350,7 @@ bool clear_Game(string name){
 			iss >> games[select].name;
          iss >> games[select].userName;
 			if(games[select].userName != ""){
-			select++;
+				select++;
 			}
 		}
 	}
@@ -383,16 +363,13 @@ bool clear_Game(string name){
 		}
 	}
 	writeFile.close();
-
    return true;
 }
-	
 /**********************************************************************************************
    create_Game, writes availible game to the waiting game list and creates the game_Info struct
    inputs: port number, host name, game name, and username
    outputs: game_info struct
 **********************************************************************************************/
-
 game_Info create_Game(int port, string host, string name, string userName){
 	ofstream writeFile;
    game_Info gameData;
@@ -405,24 +382,23 @@ game_Info create_Game(int port, string host, string name, string userName){
 	convert << port;//add the value of Number to the characters in the stream
 	sPort = convert.str();
 	writeFile.open("/home/student/marwoomd/Public/connections.txt",fstream::app);
-		string data = sPort + " " + host + " " + name + " " + userName + "\n";
-		writeFile << data;
-      
-		return gameData;
+	string data = sPort + " " + host + " " + name + " " + userName + "\n";
+	writeFile << data;  
+	return gameData;
 }	
-
 /**********************************************************************************************
    close_Connection, close the socket connection
    input: socket identifier
    output: boolean true if successfull
 **********************************************************************************************/
-
-
 bool close_Connection(int sockfd){
 	close(sockfd);
 	return true;
 }
-
+/**********************************************************************************************
+   fillarray,fills in a char array from a string
+   input: string, empty char array to fill
+**********************************************************************************************/
 void fillarray(string value, char * array){
    array[value.size()] = 0;
 	memcpy(array,value.c_str(),value.size());
