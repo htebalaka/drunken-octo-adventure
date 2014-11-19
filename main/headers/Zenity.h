@@ -9,7 +9,7 @@ namespace Zenity
 {
    std::string getCmdOutput(std::string);
    std::string getUserText(std::string, std::string, std::string);
-   std::string getTableEntry(std::string, std::string, std::vector<std::string>, std::vector<std::string>);
+   std::string getTableEntry (std::string, std::string, std::vector<std::string>, std::vector< <std::vector<std::string> >);
    std::string getAnswer(std::string, std::string, std::string, std::string);
    std::string getCmdOutput(std::string);
 }
