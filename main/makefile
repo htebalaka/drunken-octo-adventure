@@ -1,4 +1,3 @@
-
 CXX=g++
 flags=-lpanel -lncurses -std=c++11
 
@@ -39,7 +38,6 @@ GUI_CPP=sourcefiles/main.cpp
 GAME_CPP = sourcefiles/game.cpp
 GAME_O=objectfiles/game.o
 
-
 .PHONY: clean
 .PHONY: gui
 
@@ -79,9 +77,9 @@ ${GUI_GLOBALS_O}: ${GUI_GLOBALS_CPP} ${GUI_GLOBALS_H} ${BOARDGUI_H}
 	@echo "Creating ${GUI_GLOBALS_O}"
 	${CXX} -c ${GUI_GLOBALS_CPP} ${flags} -o ${GUI_GLOBALS_O}
 
-${ZENITY_O): ${ZENITY_CPP} ${ZENITY_H}
+${ZENITY_O}: ${ZENITY_CPP} ${ZENITY_H}
 	@echo "Creating ${ZENITY_O}"
-	@${CSS} -c ${ZENITY_CPP} ${flags} -o ${ZENITY_O}
+	${CXX} -c ${ZENITY_CPP} ${flags} -o ${ZENITY_O}
 
 clean:
 	rm objectfiles/*.o

@@ -134,21 +134,26 @@ char *sync_Board(string board, game_Info gameData){
    input: move data, and game_Info struct
    output: returns move data if it your wasnt turn, or 0 if it was your turn
 **********************************************************************************************/
-string make_Move(string move, game_Info gameData, bool &turn){
+bool send_Move(string move, game_Info gameData, bool &turn){
 	char movedata[MAXDATASIZE];
-	char data[MAXDATASIZE];	
+		
 	fillarray(move, movedata);
-	string oMove = data;
+	
 	if(turn){//it is your turn!	
 		send(gameData.sockfd, movedata , MAXDATASIZE, 0);
 		turn = false;
-		return "0";
+		return true;
 	}else{
+		return false;
+	}
+}
+
+string get_Move(game_Info gameData, bool &turn){
+		char data[MAXDATASIZE];
 		recv(gameData.sockfd, data , MAXDATASIZE, 0);
+		string oMove = data;
 		turn = true;
 		return oMove;
-	}
-
 }
 /**********************************************************************************************
    host_Connect, creates a new game and waits for a player 2
