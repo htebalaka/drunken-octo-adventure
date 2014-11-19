@@ -73,7 +73,7 @@ void board::set_up(char startPositions[])
 *                post-condition: game ends
 ********************************************************************************************/
 
-void board::winner(char winnerColor)
+bool board::winner(char winnerColor)
 {
 //  sends who won the game to the players GUI
    if (winnerColor=='B')
@@ -279,3 +279,25 @@ void board::update_side(piece * current)
 }
 
 
+/*****************************************************************************************
+*                     can_pickup  implementation
+*                 pre-condition: a location of a piece is sent with a char of R or B
+*                 post-condition: returns true if the piece color is the same as the player 
+*                                 making move
+******************************************************************************************/
+
+bool board::can_pickup(int row,int column,char color)
+{
+   return (piece[row][column]->color==color);
+}
+
+/*****************************************************************************************
+*                 theres_no_piece_at implementation
+*               pre-condition:  a location is sent to function on the board
+*               post-condition: returns true if there is no piece in this location
+******************************************************************************************/
+
+bool board::theres_no_piece_at(int row,int column)
+{
+   return (piece[row][column]->rank!='E'); 
+}

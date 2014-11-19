@@ -102,6 +102,7 @@ bool action = false;
       board game;  // create a board object which the game is played on
       char redPieces[41];  // declare an array to hold red's initial piece positions
       char bluePieces[41];  // declare an array to hold blue's initioal piece positions
+      bool whowon;  // a boolian variabe to indicate who has won 0 for red 1 for blue
       //  get player positions
       //  place the pieces into the players piece arrays
       //  place the pieces on the board
@@ -130,8 +131,12 @@ bool action = false;
 **********************************************************************************************/
         
 
-         //  check to see if the red player has won or if red has quit the game 
-         //  if not get the blue players move
+         if (winner){  //  check to see if the blue player has won or if red has quit the game 
+            quit=true; 
+            whowom=false;  // flag is false indicating red is the winner
+         }
+ 
+         //  if not get the red players move
          // update the board - the board object will update the players piece array
 
          // this function gets called to give control to the current player
