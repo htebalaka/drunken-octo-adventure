@@ -55,7 +55,7 @@ ${BOARD_O}: ${GLOBALS} ${PIECE_H} ${PLAYER_H} ${BOARD_H} ${BOARD_CPP}
 	echo making ${BOARD_O}
 	$(CXX) $(flags) ${BOARD_CPP} -c -o ${BOARD_O}
 
-${GAME_O}: ${GLOBALS} ${PIECE_H} ${PLAYER_H} ${BOARD_H} ${GAME_CPP} ${SOCKETS_H}
+${GAME_O}: ${GLOBALS} ${PIECE_H} ${PLAYER_H} ${BOARD_H} ${GAME_CPP} ${SERVER_H}
 	echo making ${GAME_O}
 	$(CXX) $(flags) ${GAME_CPP} -c -o ${GAME_O}
 

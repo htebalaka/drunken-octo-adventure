@@ -29,6 +29,7 @@ void won(bool whoWon);
 int main()
 {
 bool stop = false;
+bool turn = false;
 /**********************************************************************************************
 *                       create a session and find a challenger
                         input required: none;
@@ -55,6 +56,7 @@ bool action = false;
 				if(gameData.sockfd){
 					gameData.playerType = 'B';
 					action = true;
+					turn = true;
 				}else{
 					cerr << "Could Not Connect Socket\n";
 				}

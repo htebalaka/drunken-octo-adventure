@@ -29,6 +29,7 @@ void won(bool whoWon);
 int main()
 {
 bool stop = false;
+bool turn = false;
 /**********************************************************************************************
 *                       create a session and find a challenger
                         input required: none;
@@ -55,6 +56,7 @@ bool action = false;
 				if(gameData.sockfd){
 					gameData.playerType = 'B';
 					action = true;
+					turn = true;
 				}else{
 					cerr << "Could Not Connect Socket\n";
 				}
@@ -84,7 +86,7 @@ bool action = false;
 	BoardGUI gui = smart_init_board();
    bool isBottomPlayer = gameData.playerType == 'R';
 	auto starting_board = gui.new_game(isBottomPlayer);
-	char *positions = flattenVec(starting_board, isBottomPlayer);
+	char *positions = BoardGUI_hof::flattenVec(starting_board, isBottomPlayer);
 	char *opponentBoard = sync_Board(positions,gameData);
    exit_gui(0);
 	stop = true;//for debugging only
