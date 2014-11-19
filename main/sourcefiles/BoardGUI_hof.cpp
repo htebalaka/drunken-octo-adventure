@@ -23,15 +23,21 @@ std::function<bool (int,int)> BoardGUI_hof::boundsCheck(GAME_MODE mode)
    }
 }
 
+// takes a vector of vectors, and flattens it into a single char*, with a
+// leading 'R'|'B' to indicate the players color.
+// Precondition: The input vector must be 10*40
+// Laws:
+// id = reverse . flattenVec(v, b) where
+// reverse :: Char* -> (Vector (Vector Char), Bool)
 char* BoardGUI_hof::flattenVec(std::vector< std::vector<char> > vec, bool isBottomPlayer)
 {
-   char rvalue[41];
+   static char rvalue[41];
    rvalue[0] = isBottomPlayer ? 'R' : 'B';
    int i = 1;
    for (auto vec2 : vec)
    {
       for (auto e : vec2)
-      {  
+      {
          if (i==41)
          {
             return rvalue;
@@ -42,5 +48,3 @@ char* BoardGUI_hof::flattenVec(std::vector< std::vector<char> > vec, bool isBott
          }
       }
    }
-}
-

@@ -116,11 +116,9 @@ char *sync_Board(string board, game_Info gameData){
    switch(gameData.playerType){//sockets are a 1 way street, cant send and recieve at the same time...
       case 'B'://host  always sends first
          send(gameData.sockfd, boardData , MAXDATASIZE, 0);//send board data to client
-			cout << "Waiting for other player...\n";
          recv(gameData.sockfd, OboardData , MAXDATASIZE, 0);//recieve clients board data
       break;
       case 'R'://client recieves first
-			cout << "Waiting for other player...\n";
          recv(gameData.sockfd, OboardData , MAXDATASIZE, 0);//recieve hosts board data
          send(gameData.sockfd, boardData , MAXDATASIZE, 0);//send board data to host           
       break;
@@ -134,10 +132,28 @@ char *sync_Board(string board, game_Info gameData){
 /**********************************************************************************************
   make_Move, Passes move data to other player, returns other players move
    input: move data, and game_Info struct
-   output: ?
+   output: returns move data if it your wasnt turn, or 0 if it was your turn
 **********************************************************************************************/
-string make_Move(string move, game_Info gameData){
+bool send_Move(string move, game_Info gameData, bool &turn){
+	char movedata[MAXDATASIZE];
+		
+	fillarray(move, movedata);
+	
+	if(turn){//it is your turn!	
+		send(gameData.sockfd, movedata , MAXDATASIZE, 0);
+		turn = false;
+		return true;
+	}else{
+		return false;
+	}
+}
 
+string get_Move(game_Info gameData, bool &turn){
+		char data[MAXDATASIZE];
+		recv(gameData.sockfd, data , MAXDATASIZE, 0);
+		string oMove = data;
+		turn = true;
+		return oMove;
 }
 /**********************************************************************************************
    host_Connect, creates a new game and waits for a player 2
