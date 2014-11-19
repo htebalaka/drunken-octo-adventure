@@ -139,14 +139,17 @@ bool action = false;
                std::function<bool (int,int)>[](int y, int x)
                {
                   // this gets executed to check whether we can pickup a piece
+                  return board.can_pickup(y, x, gameData.playerType)
                },
                std::function<bool (int,int,int,int)>[](int toY, int toX, int fromY, int fromX)
                {
                   // this gets executed to check whether we can move a piece
+                  return board.is_valid(toY, toX, fromY, fromX)
                },
                std::function<void (int,int,int,int)>[](int toY, int toX, int fromY, int fromX)
                {
                   // this gets executed when we make a move
+                  return board.make_move(toY, toX, fromY, fromX);
                });
          // this function gets called to give control to the player across the
          // network
@@ -154,15 +157,18 @@ bool action = false;
                std::function<bool (int,int)>[](int y, int x)
                {
                   // this gets executed to test whether a location is empty
+                  return board.theres_no_piece_at(y,x);
                },
                std::function<bool (int,int)>[](int y, int x)
                {
                   // this gets executed to see if a non-empty location is red
+                  return (board.color[y][x] == 'R) ? true : false
                },
                std::function<char (int,int)>[](int y, int x)
                {
                   // this gets executed to see what character should go in what
                   // location
+                  return (board.char[y][x])
                });
          game.make_move(row,column,newRow,newColumn);
          // check to see if the blue player has won or if blue has quit the game
