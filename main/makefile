@@ -11,6 +11,9 @@ ZENITY_H=headers/Zenity.h
 ZENITY_CPP=sourcefiles/Zenity.cpp
 ZENITY_O=objectfiles/Zenity.o
 
+ZENITY_TEST_SETUP_CPP=test/sourcefiles/zenity_test_setup.cpp
+ZENITY_TEST_SETUP_BIN=test/zenity_test_setup
+
 BOARDGUI_HOF_H=headers/BoardGUI_hof.h
 BOARDGUI_HOF_CPP=sourcefiles/BoardGUI_hof.cpp
 BOARDGUI_HOF_O=objectfiles/BoardGUI_hof.o
@@ -80,6 +83,10 @@ ${GUI_GLOBALS_O}: ${GUI_GLOBALS_CPP} ${GUI_GLOBALS_H} ${BOARDGUI_H}
 ${ZENITY_O}: ${ZENITY_CPP} ${ZENITY_H}
 	@echo "Creating ${ZENITY_O}"
 	${CXX} -c ${ZENITY_CPP} ${flags} -o ${ZENITY_O}
+
+${ZENITY_TEST_SETUP_BIN}: ${ZENITY_H} ${ZENITY_O} ${ZENITY_TEST_SETUP_CPP}
+	@echo "Creating ${ZENITY_TEST_SETUP_BIN}"
+	@${CXX} ${ZENITY_O} ${ZENITY_TEST_SETUP_CPP} ${flags} -o ${ZENITY_TEST_SETUP_BIN}
 
 clean:
 	rm objectfiles/*.o

@@ -48,9 +48,12 @@ void GUI_Globals::exit_gui_loudly(std::string format)
    std::exit(1);
 }
 
-   void GUI_Globals::assert(bool condition, std::string format)
+void GUI_Globals::assert(bool condition, std::string format)
 {  if (!condition)
    { GUI_Globals::exit_gui_loudly(format); }
 }
 
-
+void GUI_Globals::exit_gui_quietly()
+{
+    endwin();
+}

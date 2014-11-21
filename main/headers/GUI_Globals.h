@@ -19,6 +19,7 @@ namespace GUI_Globals
    void init_gui();
    void exit_gui(int errCode);
    void exit_gui_loudly(std::string format);
+   void exit_gui_quietly();
    void assert(bool condition, std::string format);
    BoardGUI smart_init_board();
 }

@@ -1,6 +1,8 @@
 
 #include "../headers/BoardGUI_hof.h"
 
+using namespace std;
+
 // returns a predicate function for the valid bounds of the GUI for:
 // -1 -> top player beginning of game
 // 1  -> bottom player beginning of game
@@ -48,3 +50,35 @@ char* BoardGUI_hof::flattenVec(std::vector< std::vector<char> > vec, bool isBott
          }
       }
    }
+}
+
+pair< vector< vector<char> >, bool> BoardGUI_hof::un_flatten_vec(char* chs)
+{
+    vector<char> r1, r2, r3, r4;
+    r1.resize(10, '_');
+    r2.resize(10, '_');
+    r3.resize(10, '_');
+    r4.resize(10, '_');
+    vector< vector<char> > rvalue {r1, r2, r3, r4};
+
+    for (int i=0; i<4; ++i)
+    {
+        for (int j=0; j<10; ++j)
+        {
+            rvalue[i][j] = chs[10*i+j+1];
+        }
+    }
+
+    bool isRedPlayer = 'R'==chs[0];
+
+    return make_pair(rvalue, isRedPlayer);
+}
+
+bool BoardGUI_hof::flatten_vec_identity(vector< vector<char> > vec, bool isRedPlayer)
+{
+    auto p = un_flatten_vec( flattenVec(vec, isRedPlayer) );
+    auto vec_1 = p.first;
+    auto isRedPlayer_1 = p.second;
+
+    return vec_1==vec and isRedPlayer_1==isRedPlayer;
+}

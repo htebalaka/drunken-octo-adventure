@@ -23,7 +23,7 @@ string Zenity::getUserText(string title, string text, string def)
 // text. the column names should be given in /columns/, while the table
 // contents should be given in /entries/. entries should contain vectors with
 // columns.size() entries each, and any strings in those vectors should be escaped
-string Zenity::getTableEntry(string title, string text, vector<string> columns, vector< <vector<string> > entries)
+string Zenity::getTableEntry(string title, string text, vector<string> columns, vector <vector<string> > entries)
 {
     string columnconcat = "";
     for (auto i : columns)
