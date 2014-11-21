@@ -66,20 +66,21 @@ void test_update(player testPlayer)
     do{
          cout<<"enter a piece number to change: \n";
          input=getchar();
-         if(is)
-         playerPiece->pieceNumber=pieceNumber;
+         if(isdigit(input)){
+            playerPiece=testPlayer->pieceNumber;
        
-         cout<<"Enter a rank: \n";
-         rank=getchar();
-         playerPiece->rank=rank;
+            cout<<"Enter a rank: \n";
+            rank=getchar();
+            playerPiece->rank=rank;
+  
+            cout<<"Enter a color: \n";
+            color=getchar();
+            playerPiece->color= color;
 
-         cout<<"Enter a color: \n";
-         color=getchar();
-         playerPiece->color= color;
-
-         testPlayer.update(playerPiece);
-         testPlayer.print_playerPieces();
- 
+            testPlayer.update(playerPiece);
+            testPlayer.print_playerPieces();
+         }
+      else cout<<"input not valid:\n";
       cout<<"Enter Q to quit or anything else to continue\n";
       cmd=getchar();
       cmd=toupper(cmd);

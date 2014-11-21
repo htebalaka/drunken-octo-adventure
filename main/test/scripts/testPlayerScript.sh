@@ -2,5 +2,5 @@
 
 echo testing player.h methods
 
-./testPlayer< testData/redPlayer.txt > testfiles/results/testPlayerResults.txt
+	../testPlayer< ../data/redPlayer.txt > ../results/testPlayerResults.txt
 
