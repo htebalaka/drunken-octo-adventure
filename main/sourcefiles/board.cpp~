@@ -288,7 +288,8 @@ void board::update_side(piece * current)
 
 bool board::can_pickup(int row,int column,char color)
 {
-   return (piece[row][column]->color==color);
+	
+   return((piece[row][column])->color == color);
 }
 
 /*****************************************************************************************
@@ -296,7 +297,8 @@ bool board::can_pickup(int row,int column,char color)
 *               pre-condition:  a location is sent to function on the board
 *               post-condition: returns true if there is no piece in this location
 ******************************************************************************************/
+
 bool board::theres_no_piece_at(int row,int column)
 {
-   return (piece[row][column]->color!='E'); 
+   return (piece[row][column]->rank!='E'); 
 }

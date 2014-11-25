@@ -288,7 +288,8 @@ void board::update_side(piece * current)
 
 bool board::can_pickup(int row,int column,char color)
 {
-   return (piece[row][column]->color==color);
+	
+   return((space[row][column])->color == color);
 }
 
 /*****************************************************************************************
@@ -299,5 +300,5 @@ bool board::can_pickup(int row,int column,char color)
 
 bool board::theres_no_piece_at(int row,int column)
 {
-   return (piece[row][column]->rank!='E'); 
+   return (space[row][column]->rank!='E'); 
 }
