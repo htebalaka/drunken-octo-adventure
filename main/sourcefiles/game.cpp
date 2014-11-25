@@ -182,7 +182,7 @@ bool action = false;
 			moves >> toX;
 			moves >> fromY;
 			moves >> fromX;
-			board.make_move(toY, toX, fromY, fromX)
+			board.make_move(toY, toX, fromY, fromX);
 
          gui.refresh_board(
                [](int y, int x) -> bool
@@ -199,9 +199,7 @@ bool action = false;
                {
                   // this gets executed to see what character should go in what
                   // location
-                  //return (board.char[y][x]);
-                  char test;
-                  return test;
+                  return (board.char[y][x]);
                });
          game.make_move(row,column,newRow,newColumn);
          // check to see if the blue player has won or if blue has quit the game
