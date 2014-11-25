@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <thread>
+#include <fstream>
 
 #include "../headers/GUI_Globals.h"
 #include "../headers/BoardGUI_hof.h"
@@ -20,97 +21,230 @@ using namespace std;
 using namespace GUI_Globals;
 using namespace BoardGUI_hof;
 
-void BoardGUI::wait_for_player(
-      function<bool (int,int)> pickupPredicate,
-      function<bool (int,int,int,int)> placementPredicate,
-      function<void (int,int,int,int)> execTurn)
+// overloaded getch, to read input from either the player or from
+// a separate file. used for debugging.
+chtype BoardGUI::readch()
 {
-   int ch;
-   while ((ch=getch()))
-   {
-      switch(ch)
-      {
-         case 'i': case 'j': case 'l': case 'k':
-            move_cursor(ch, boundsCheck(REG_GAME));
-            break;
-         case 'u':
-            if (move_piece(
-                     pickupPredicate,
-                     boundsCheck(REG_GAME),
-                     placementPredicate,
-                     execTurn))
-            {
-               // the piece was moved and the turn is finished
-               // need to redraw the board here
-               return;
-            }
-            else
-            {
+    chtype ch;
+    if (run_macro != nullptr)
+    {
+        chtype ch;
+        (*run_macro) >> ch;
+    }
+    else
+    {
+        ch = getch();
+    }
+    if (record_macro != nullptr)
+    {
+        (*record_macro) << ch;
+    }
+    return ch;
+}
+
+// gives control of the GUI to the player, waiting for them to make a valid
+// move before returning
+void BoardGUI::wait_for_player(
+    function<bool (int,int)> pickupPredicate,
+    function<bool (int,int,int,int)> placementPredicate,
+    function<void (int,int,int,int)> execTurn)
+{
+    // see the comment in BoardGUI::refresh_board for discussion on
+    // refactoring these dectorators, which are included solely for testing.
+    if (run_macro != nullptr)
+    {
+        pickupPredicate = [this](int y, int x) {
+            bool rvalue;
+            (*run_macro) >> rvalue;
+            return rvalue;
+        };
+        placementPredicate = [this](int toY, int toX, int fromY, int fromX) {
+            bool rvalue;
+            (*run_macro) >> rvalue;
+            return rvalue;
+        };
+        execTurn = [this](int toY, int toX, int fromY, int fromX) {
+            return;
+        };
+    }
+    if (record_macro != nullptr)
+    {
+        pickupPredicate = [this, pickupPredicate](int y, int x) {
+            auto rvalue = pickupPredicate(y, x);
+            (*record_macro) << rvalue;
+            return rvalue;
+        };
+        placementPredicate = [this, placementPredicate](int toY, int toX, int fromY, int fromX) {
+            auto rvalue = placementPredicate(toY, toX, fromY, fromX);
+            (*record_macro) << rvalue;
+            return rvalue;
+        };
+        // execTurn doesn't need to be decorated, as its side-effects should
+        // be implicitly recorded by other decorators
+    }
+
+    int ch;
+    while ((ch=readch()))
+    {
+        switch(ch)
+        {
+            case 'i': case 'j': case 'l': case 'k':
+                move_cursor(ch, boundsCheck(REG_GAME));
+                break;
+            case 'u':
+                if (move_piece(
+                            pickupPredicate,
+                            boundsCheck(REG_GAME),
+                            placementPredicate,
+                            execTurn))
+                {
+                    // the piece was moved and the turn is finished
+                    // need to redraw the board here
+                    return;
+                }
+                else
+                {
                // the piece wasn't moved and the user still needs to
                // finish their turn
                break;
             }
-         case 'q':
-            exit_gui(1);
-            break;
-      }
-   }
+            case 'q':
+                exit_gui_quietly();
+                break;
+        }
+    }
 }
 
+// refreshes the GUI. this is used to cause changes to the GUI in response
+// to the player over the network
 void BoardGUI::refresh_board(
       function<bool (int y, int x)> isEmpty,
       function<bool (int y, int x)> isRed,
       function<char (int y, int x)> getChar)
 {
-   for (int y=0; y<10; ++y)
-   {
-      for (int x=0; x<10; ++x)
-      {
-         if (isEmpty(y,x))
-         {
-            // if the place is empty draw a blan
-            b_mvaddch(y,x,' ');
-         }
-         else
-         {
-            // otherwise get the character that should go there and its
-            // color and print it to that location
-            chtype color = isRed(y,x) ? RED : BLUE;
-            chtype ch = getChar(y,x);
-            b_mvaddch(y,x, ch | color);
-         }
-      }
-   }
-   // refresh the gui
-   b_refresh();
+    // overload the provided callbacks to include macro functionality
+    // if required.
+    // NOTE: i'd like to move this logic outside of refresh_board, though i'm
+    // not sure what the best way to refactor it is. worst case refresh_board
+    // could itself be decorated, so that its own logic would be in itself
+    // while the macro logic would be encapsulated in its decorator. i'm
+    // worried i won't have time to implement that however.
+    // the biggest deficiency with the current implementation is that we are
+    // still required to pass in callbacks, but if run_macro is not null
+    // the arguments are entirely overridden. if i have time the first thing
+    // i want to work on is a specific BoardGUI::run_macro(string) method
+    // that abstracts over that, which would allow me to remove at least the
+    // run_macro portion of the code from refresh_board/wait_for_player
+    if (run_macro != nullptr)
+    {
+        // these override the provided callbacks to simply read their outputs
+        // from a file.
+        // i think these could be refactored with templates to provide the
+        // necessary polymorphism
+        isEmpty = [this](int y, int x) {
+            bool rvalue;
+            (*run_macro) >> rvalue;
+            return rvalue;
+        };
+        isRed = [this](int y, int x) {
+            bool rvalue;
+            (*run_macro) >> rvalue;
+            return rvalue;
+        };
+        getChar = [this](int y, int x) {
+            char rvalue;
+            (*run_macro) >> rvalue;
+            return rvalue;
+        };
+    }
+    // note if both run_macro and record_macro are not null, results should
+    // read from one file, then written to another. there isn't a pressing
+    // need to allow both to happen at once, but if there is an error in
+    // the decorating code running both at once should help catch it, as the
+    // input/output might not be identical
+    if (record_macro != nullptr)
+    {
+        // these override the provided callbacks to write their output to a
+        // file. ditto the run_macro template comment, see above
+        isEmpty = [this, isEmpty](int y, int x) {
+            auto rvalue = isEmpty(y, x);
+            (*record_macro) << rvalue;
+            return rvalue;
+        };
+        isRed = [this, isRed](int y, int x) {
+            auto rvalue = isRed(y, x);
+            (*record_macro) << rvalue;
+            return rvalue;
+        };
+        getChar = [this, getChar](int y, int x) {
+            auto rvalue = getChar(y, x);
+            (*record_macro) << rvalue;
+            return rvalue;
+        };
+    }
+
+    for (int y=0; y<10; ++y)
+    {
+        for (int x=0; x<10; ++x)
+        {
+            if (isEmpty(y,x))
+            {
+                // if the place is empty draw a blan
+                b_mvaddch(y,x,' ');
+            }
+            else
+            {
+                // otherwise get the character that should go there and its
+                // color and print it to that location
+                chtype color = isRed(y,x) ? RED : BLUE;
+                chtype ch = getChar(y,x);
+                b_mvaddch(y,x, ch | color);
+            }
+        }
+    }
+    b_refresh();
 }
 
+// gives control to the player to place their pieces on the board. upon
+// completion only the portion of the board that the player started in
+// should be filled, every character in pieces should be counted the 
+// same in the returned vector
 vector< vector<char> > BoardGUI::new_game(bool isBottomPlayer)
 {
-   empty_grid();
-   // initialize a 4x10 board with empty characters
-   vector< vector<chtype> > startRegion (4, vector<chtype> (10, ' '));
-   vector<chtype> pieces {'B','B','B','B','B','B','F','S','9','9','9','9','9','9','9','9','8','8','8','8','8','7','7','7','7','6','6','6','6','5','5','5','5','4','4','4','3','3','2','1'};
+    // if macro mode is on overwrite/save the isBottomPlayer boolean.
+    if (run_macro != nullptr)
+    {
+        (*run_macro) >> isBottomPlayer;
+    }
+    if (record_macro != nullptr)
+    {
+        (*record_macro) << isBottomPlayer;
+    }
 
-   // set the cursor into the valid region
-   cursorX = 5;
-   cursorY = isBottomPlayer ? 7 : 2;
-   b_refresh();
+    empty_grid();
+    // initialize a 4x10 board with empty characters
+    vector< vector<chtype> > startRegion (4, vector<chtype> (10, ' '));
+    vector<chtype> pieces {'B','B','B','B','B','B','F','S','9','9','9','9','9','9','9','9','8','8','8','8','8','7','7','7','7','6','6','6','6','5','5','5','5','4','4','4','3','3','2','1'};
 
-   // add color to the vector of characters
-   chtype color = (isBottomPlayer) ? RED : BLUE;
-   for (int i=0; i<pieces.size(); ++i)
-   {
-      pieces[i] = pieces[i] | color;
-   }
+    // set the cursor into the valid region
+    cursorX = 5;
+    cursorY = isBottomPlayer ? 7 : 2;
+    b_refresh();
 
-   chtype bottomCh = b_inch(cursorY, cursorX);
-   int index = 0;
+    // add color to the vector of characters
+    chtype color = (isBottomPlayer) ? RED : BLUE;
+    for (int i=0; i<pieces.size(); ++i)
+    {
+        pieces[i] = pieces[i] | color;
+    }
+
+    chtype bottomCh = b_inch(cursorY, cursorX);
+    int index = 0;
 
    // loop until all pieces have been placed
    chtype ch;
 
-   while ((ch=getch()) and index < pieces.size())
+   while ((ch=readch()) and index < pieces.size())
    {
       // find the y index of the cursor relative to the region, 6 is the
       // index where the bottom region begins, otherwise it is 0. this is
@@ -150,7 +284,7 @@ vector< vector<char> > BoardGUI::new_game(bool isBottomPlayer)
             b_refresh();
             break;
          case 'q':
-            exit_gui(1);
+            exit_gui_quietly();
             break;
       }
    }
@@ -195,7 +329,7 @@ bool BoardGUI::move_piece(
    chtype bottomCh = b_inch(cursorY, cursorX);
 
    chtype ch;
-   while ((ch=getch()))
+   while ((ch=readch()))
    {
       switch(ch)
       {
@@ -222,21 +356,22 @@ bool BoardGUI::move_piece(
             }
             break;
          case 'q':
-            exit_gui(1);
+            exit_gui_quietly();
             break;
       }
    }
-   exit_gui(1);
+   exit_gui_loudly("Control reached the end of BoardGUI::move_piece. This is a bug");
    return 0;
 }
 
 /* pre-post conditions
  * every piece except that under the cursor is correct
  * the cursor is within the board region
+ * the provided /arrow/ chtype is j/k/l/i
  */
 void BoardGUI::move_cursor_while_holding(chtype arrow, chtype& bottomCh, chtype topCh,
       function<bool (int,int)> movementPredicate)
-{  
+{
    int tmpY = cursorY;
    int tmpX = cursorX;
    if (move_cursor(arrow, movementPredicate))
@@ -252,6 +387,7 @@ void BoardGUI::move_cursor_while_holding(chtype arrow, chtype& bottomCh, chtype 
 
 /* pre-post conditions
  * the cursor is within the board region
+ * the piece under the cursor is the piece on the board
  */
 bool BoardGUI::move_cursor(chtype ch, std::function<bool (int,int)> isValidBounds)
 {
@@ -294,6 +430,10 @@ BoardGUI::BoardGUI(int starty, int startx)
    cursorX = 5;
    cursorY = 5;
 
+   run_macro = nullptr;
+   record_macro = nullptr;
+   record_stdout = nullptr;
+   
    win = newwin(HEIGHT, WIDTH, starty, startx);
    box(win, 0, 0);
    keypad(win, true); // allows us to track KEY_ENTER
@@ -302,7 +442,14 @@ BoardGUI::BoardGUI(int starty, int startx)
    // removing this getch() causes a bug, where the borders of the gui aren't
    // drawn, except for sometimes a | line when moving the cursor left/right.
    // i have no idea why this happens, but don't remove it
-   getch();
+   readch();
+}
+
+void BoardGUI::set_debug_flags(ifstream* run_macro_1, ofstream*record_macro_1, ofstream* record_stdout_1)
+{
+    run_macro = run_macro_1;
+    record_macro = record_macro_1;
+    record_stdout = record_stdout_1;
 }
 
 void BoardGUI::empty_grid()
