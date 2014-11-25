@@ -143,22 +143,23 @@ bool action = false;
 
          // this function gets called to give control to the current player
          gui.wait_for_player(
-               [gameData](int y, int x)
+               [gameData](int y, int x) -> bool
                {
                   // this gets executed to check whether we can pickup a piece
                   return board.can_pickup(y, x, gameData.playerType);
                },
-               [](int toY, int toX, int fromY, int fromX)
+               [](int toY, int toX, int fromY, int fromX) -> bool
                {
                   // this gets executed to check whether we can move a piece
                   return board.is_valid(toY, toX, fromY, fromX);
                },
-               [gameData, turn, quit](int toY, int toX, int fromY, int fromX)
+               [gameData, turn, quit](int toY, int toX, int fromY, int fromX) -> void
                {
                   // this gets executed when we make a move
 						std::string moveData = toY + ' ' + toX + ' ' + fromY + ' ' + fromX;
 						if(make_move(moveData,gameData,turn)){
-                  	return board.make_move(toY, toX, fromY, fromX);
+                  	board.make_move(toY, toX, fromY, fromX);
+                     return;
 						}else{
 							quit = true;
 							exit_gui_quietly();
@@ -184,21 +185,23 @@ bool action = false;
 			board.make_move(toY, toX, fromY, fromX)
 
          gui.refresh_board(
-               [](int y, int x)
+               [](int y, int x) -> bool
                {
                   // this gets executed to test whether a location is empty
                   return board.theres_no_piece_at(y,x);
                },
-               [](int y, int x)
+               [](int y, int x) -> bool
                {
                   // this gets executed to see if a non-empty location is red
                   return (board.color[y][x] == 'R') ? true : false;
                },
-               [](int y, int x)
+               [](int y, int x) -> char
                {
                   // this gets executed to see what character should go in what
                   // location
-                  return (board.char[y][x]);
+                  //return (board.char[y][x]);
+                  char test;
+                  return test;
                });
          game.make_move(row,column,newRow,newColumn);
          // check to see if the blue player has won or if blue has quit the game
