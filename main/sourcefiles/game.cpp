@@ -90,7 +90,7 @@ bool action = false;
 	auto starting_board = gui.new_game(isBottomPlayer);
 	char *positions = BoardGUI_hof::flattenVec(starting_board, isBottomPlayer);
 	char *opponentBoard = sync_Board(positions,gameData);
-   exit_gui_quietly(0);
+   exit_gui_quietly();
 	stop = true;//for debugging only
 
 /**********************************************************************************************
@@ -143,17 +143,17 @@ bool action = false;
 
          // this function gets called to give control to the current player
          gui.wait_for_player(
-               std::function<bool (int,int)>[](int y, int x)
+               [gameData](int y, int x)
                {
                   // this gets executed to check whether we can pickup a piece
-                  return board.can_pickup(y, x, gameData.playerType)
+                  return board.can_pickup(y, x, gameData.playerType);
                },
-               std::function<bool (int,int,int,int)>[](int toY, int toX, int fromY, int fromX)
+               [](int toY, int toX, int fromY, int fromX)
                {
                   // this gets executed to check whether we can move a piece
-                  return board.is_valid(toY, toX, fromY, fromX)
+                  return board.is_valid(toY, toX, fromY, fromX);
                },
-               std::function<void (int,int,int,int)>[](int toY, int toX, int fromY, int fromX)
+               [gameData, turn, quit](int toY, int toX, int fromY, int fromX)
                {
                   // this gets executed when we make a move
 						std::string moveData = toY + ' ' + toX + ' ' + fromY + ' ' + fromX;
@@ -161,7 +161,7 @@ bool action = false;
                   	return board.make_move(toY, toX, fromY, fromX);
 						}else{
 							quit = true;
-							exit_qui_quietly();
+							exit_gui_quietly();
 							cout << "IT WASNT YOUR MOVE!!!\n";
 			
 						}
@@ -184,17 +184,17 @@ bool action = false;
 			board.make_move(toY, toX, fromY, fromX)
 
          gui.refresh_board(
-               std::function<bool (int,int)>[](int y, int x)
+               [](int y, int x)
                {
                   // this gets executed to test whether a location is empty
                   return board.theres_no_piece_at(y,x);
                },
-               std::function<bool (int,int)>[](int y, int x)
+               [](int y, int x)
                {
                   // this gets executed to see if a non-empty location is red
-                  return (board.color[y][x] == 'R) ? true : false;
+                  return (board.color[y][x] == 'R') ? true : false;
                },
-               std::function<char (int,int)>[](int y, int x)
+               [](int y, int x)
                {
                   // this gets executed to see what character should go in what
                   // location
@@ -206,7 +206,6 @@ bool action = false;
          // update the board
          game.make_move(row,column,newRow,newColumn); 
 
-         gui.refresh_board(
          // if either player has won exit loop
       }  // exit game play loop
       won(whowon);  //  send who won the game to the end of game function
@@ -216,7 +215,7 @@ bool action = false;
 /**********************************************************************************************
 *                         enter shut down procedures                      
 **********************************************************************************************/
-   exit_gui_quietly(0);
+   exit_gui_quietly();
    return 0;
 }
 
