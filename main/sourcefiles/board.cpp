@@ -311,3 +311,31 @@ bool board::theres_no_piece_at(int row,int column)
 {
    return (space[row][column]->rank!='E'); 
 }
+
+/*****************************************************************************************
+*                 get_rank implementation
+*               pre-condition:  a location is sent to function on the board with the color
+*               post-condition: returns what to display on the board
+******************************************************************************************/
+
+char board::get_rank(int row,int column,char color)
+{
+   if (space[row][column]->color==color)
+      return space[row][column]->rank;
+   return '?';
+}
+
+
+/*****************************************************************************************
+*                 get_space_color implementation
+*               pre-condition:  a location is sent to function on the board 
+*               post-condition: returns the color of the piece located there
+*                               
+******************************************************************************************/
+
+char board::get_space_color(int row, int column)
+{
+   return space[row][column]->color;
+}
+
+
