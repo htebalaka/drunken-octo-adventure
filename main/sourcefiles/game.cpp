@@ -206,7 +206,7 @@ bool action = false;
                {
                   // this gets executed to see what character should go in what
                   // location
-                  //return(game.char[y][x]);
+                  return game.get_rank(y, x, gameData.playerType);
                });
          game.make_move(row,column,newRow,newColumn);
          // check to see if the blue player has won or if blue has quit the game
