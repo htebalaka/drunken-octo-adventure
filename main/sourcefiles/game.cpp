@@ -91,8 +91,6 @@ bool action = false;
 	auto starting_board = gui.new_game(isBottomPlayer);
 	char *positions = BoardGUI_hof::flattenVec(starting_board, isBottomPlayer);
 	char *opponentBoard = sync_Board(positions,gameData);
-   exit_gui_quietly();
-	stop = true;//for debugging only
 
 /**********************************************************************************************
 *                       enter game session

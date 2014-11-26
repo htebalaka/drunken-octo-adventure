@@ -127,6 +127,7 @@ char *sync_Board(string board, game_Info gameData){
    		return "";
          break;
    }
+	
 	return OboardData;
 }
 /**********************************************************************************************
