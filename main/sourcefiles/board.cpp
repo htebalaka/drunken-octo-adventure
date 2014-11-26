@@ -70,16 +70,16 @@ void board::set_up(char startPositions[])
 /********************************************************************************************
 *                       winner implementation
 *                pre-condition: player color of the winner is sent
-*                post-condition: game ends
+*                post-condition: returns true if red wins false if blue wins
 ********************************************************************************************/
 
 bool board::winner(char winnerColor)
 {
 //  sends who won the game to the players GUI
    if (winnerColor=='B')
-   cout<<"The blue side wins\n";
+      return false;
    else
-      cout<<"The red side wins\n";
+      return true;
 }  
 
 void board::possible_moves(piece){}   // indicate to the user what the possible moves are
@@ -163,7 +163,7 @@ void board::make_move(int r ,int c,int rN,int cN)
       if (space[rN][cN]->color=='E')
          swap(space[r][c],space[rN][cN]);
       else strike(space[r][c],space[rN][cN]);   // if the space is not empty call strike method
-   } else cout<<"move is invalid\n";
+   } 
 }  
 
 /*******************************************************************************************
@@ -206,7 +206,10 @@ void board::strike(piece * &attacker,piece * &defender)
       break;
 
       case 'B':
-           remove_piece(attacker);
+           if(attacker->rank=='9')
+              remove_piece(defender);
+           else
+              remove_piece(attacker);
       break;
 
       case 'F':
@@ -288,7 +291,8 @@ void board::update_side(piece * current)
 
 bool board::can_pickup(int row,int column,char color)
 {
-   return (piece[row][column]->color==color);
+   
+   return (space[row][column]->color==color);
 }
 
 /*****************************************************************************************
@@ -299,5 +303,5 @@ bool board::can_pickup(int row,int column,char color)
 
 bool board::theres_no_piece_at(int row,int column)
 {
-   return (piece[row][column]->rank!='E'); 
+   return (space[row][column]->rank!='E'); 
 }
