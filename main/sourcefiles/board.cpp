@@ -30,7 +30,11 @@ board::board()
    }
 }
 
+char board::get_space_color(int y, int x){
 
+return space[y][x]->color;
+
+}
 
 /***********************************************************************************************
 *                        set_up implementation

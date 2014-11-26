@@ -25,7 +25,7 @@ class board{
       void strike(piece *&, piece *&);  // determines the winner of a strike
       bool can_pickup(int,int,char);  // determines if a player can pick up a piece 
       bool theres_no_piece_at(int,int);  // returns if there is a piece at this location
-
+		char get_space_color(int, int);//get the color of a board position x,y
       void print_board();    //  print the board as it stands 
       void print_space(int r,int c);  // debugging method
    private:

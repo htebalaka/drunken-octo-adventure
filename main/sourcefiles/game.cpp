@@ -202,13 +202,13 @@ bool action = false;
                [&](int y, int x) -> bool
                {
                   // this gets executed to see if a non-empty location is red
-                  return (game.color[y][x] == 'R') ? true : false;
+                  return (game.get_space_color(y,x) == 'R') ? true : false;
                },
                [&](int y, int x) -> char
                {
                   // this gets executed to see what character should go in what
                   // location
-                  return(game.char[y][x]);
+                  //return(game.char[y][x]);
                });
          game.make_move(row,column,newRow,newColumn);
          // check to see if the blue player has won or if blue has quit the game
