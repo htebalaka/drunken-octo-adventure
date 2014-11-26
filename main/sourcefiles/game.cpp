@@ -14,7 +14,9 @@
 #include "../headers/BoardGUI_hof.h"
 #include <iostream>
 #include <fstream>
-#include "stdio.h"
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
 
 using namespace std;
 using namespace GUI_Globals;
@@ -30,6 +32,7 @@ int main()
 {
 bool stop = false;
 bool turn = false;
+bool winner = false;
 /**********************************************************************************************
 *                       create a session and find a challenger
                         input required: none;
@@ -88,7 +91,7 @@ bool action = false;
 	auto starting_board = gui.new_game(isBottomPlayer);
 	char *positions = BoardGUI_hof::flattenVec(starting_board, isBottomPlayer);
 	char *opponentBoard = sync_Board(positions,gameData);
-   exit_gui(0);
+   exit_gui_quietly();
 	stop = true;//for debugging only
 
 /**********************************************************************************************
@@ -120,7 +123,7 @@ bool action = false;
       bool quit=false;  // a flag to control game play loop
       int row,column,newRow,newColumn;  // variables to pass coordinates to board object
       row=column=newRow=newColumn=0;  // initialize coordinate variables to 0
-      bool whoWon=true;  // indicator to tell who won the game 0 for blue  1 for red
+      whowon=true;  // indicator to tell who won the game 0 for blue  1 for red
 
       if (!quit){
          // all in game functions and proper game play logic in here
@@ -133,47 +136,79 @@ bool action = false;
 
          if (winner){  //  check to see if the blue player has won or if red has quit the game 
             quit=true; 
-            whowom=false;  // flag is false indicating red is the winner
+            whowon=false;  // flag is false indicating red is the winner
          }
  
          //  if not get the red players move
          // update the board - the board object will update the players piece array
 
          // this function gets called to give control to the current player
-         /*gui.wait_for_player(
-               std::function<bool (int,int)>[](int y, int x)
+         gui.wait_for_player(
+               [&](int y, int x) -> bool
                {
                   // this gets executed to check whether we can pickup a piece
-                  return board.can_pickup(y, x, gameData.playerType)
+                  return (game.can_pickup(y, x, gameData.playerType));
                },
-               std::function<bool (int,int,int,int)>[](int toY, int toX, int fromY, int fromX)
+               [&](int toY, int toX, int fromY, int fromX) -> bool
                {
                   // this gets executed to check whether we can move a piece
-                  return board.is_valid(toY, toX, fromY, fromX)
+                  return (game.is_valid(toY, toX, fromY, fromX));
                },
-               std::function<void (int,int,int,int)>[](int toY, int toX, int fromY, int fromX)
+               [&](int toY, int toX, int fromY, int fromX) -> void
                {
                   // this gets executed when we make a move
-                  return board.make_move(toY, toX, fromY, fromX);
+						std::string moveData;
+						moveData += std::to_string(toY);
+						moveData += ' ';
+						moveData += std::to_string(toX);
+						moveData += ' ';
+						moveData += std::to_string(fromY);
+						moveData += ' ';
+						moveData += std::to_string(fromX);
+						
+						
+						if(send_Move(moveData,gameData,turn)){
+                  	game.make_move(toY, toX, fromY, fromX);
+						}else{
+							quit = true;
+							exit_gui_quietly();
+							cout << "IT WASNT YOUR MOVE!!!\n";
+			
+						}
                });
          // this function gets called to give control to the player across the
          // network
+
+
+			//wait for other player move here
+			std::string otherPlayerMove = get_Move(gameData, turn);	
+			istringstream moves(otherPlayerMove);	
+			int toY;
+			int toX;
+			int fromY;
+			int fromX;
+			moves >> toY;
+			moves >> toX;
+			moves >> fromY;
+			moves >> fromX;
+			game.make_move(toY, toX, fromY, fromX);
+
          gui.refresh_board(
-               std::function<bool (int,int)>[](int y, int x)
+               [&](int y, int x) -> bool
                {
                   // this gets executed to test whether a location is empty
-                  return board.theres_no_piece_at(y,x);
+                  return game.theres_no_piece_at(y,x);
                },
-               std::function<bool (int,int)>[](int y, int x)
+               [&](int y, int x) -> bool
                {
                   // this gets executed to see if a non-empty location is red
-                  return (board.color[y][x] == 'R) ? true : false
+                  return (game.get_space_color(y,x) == 'R') ? true : false;
                },
-               std::function<char (int,int)>[](int y, int x)
+               [&](int y, int x) -> char
                {
                   // this gets executed to see what character should go in what
                   // location
-                  return (board.char[y][x])
+                  //return(game.char[y][x]);
                });
          game.make_move(row,column,newRow,newColumn);
          // check to see if the blue player has won or if blue has quit the game
@@ -181,17 +216,16 @@ bool action = false;
          // update the board
          game.make_move(row,column,newRow,newColumn); 
 
-         gui.refresh_board(*/
          // if either player has won exit loop
       }  // exit game play loop
-      won(whoWon);  //  send who won the game to the end of game function
+      won(whowon);  //  send who won the game to the end of game function
    }  // exit game session loop
    
    
 /**********************************************************************************************
 *                         enter shut down procedures                      
 **********************************************************************************************/
-   exit_gui(0);
+   exit_gui_quietly();
    return 0;
 }
 

@@ -30,7 +30,11 @@ board::board()
    }
 }
 
+char board::get_space_color(int y, int x){
 
+return space[y][x]->color;
+
+}
 
 /***********************************************************************************************
 *                        set_up implementation
@@ -291,8 +295,10 @@ void board::update_side(piece * current)
 
 bool board::can_pickup(int row,int column,char color)
 {
-   
-   return (space[row][column]->color==color);
+
+	
+   return((space[row][column])->color == color);
+
 }
 
 /*****************************************************************************************

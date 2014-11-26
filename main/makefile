@@ -36,13 +36,14 @@ BOARD_CPP=sourcefiles/board.cpp
 BOARD_H=headers/board.h
 BOARD_O=objectfiles/board.o
 
-GUI_CPP=sourcefiles/main.cpp
+GUI_CPP=test/sourcefiles/BoardGUI_test.cpp
 
 GAME_CPP = sourcefiles/game.cpp
 GAME_O=objectfiles/game.o
 
 .PHONY: clean
 .PHONY: gui
+.PHONY: test
 
 testBoard: ${PLAYER_O} ${BOARD_O} ${GAME_O} ${SERVER_O} $(BOARDGUI_O) $(GUI_GLOBALS_O) ${BOARDGUI_HOF_O}
 	echo making testBoard

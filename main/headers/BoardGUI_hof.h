@@ -12,7 +12,7 @@ namespace BoardGUI_hof
    char* flattenVec(std::vector< std::vector<char> >, bool);
 
    std::pair< std::vector< std::vector<char> >, bool> un_flatten_vec(char*);
-   bool flatten_vec_identity(std::vector< std::vector<char> >, bool);
+   bool flatten_vec_test(std::vector< std::vector<char> >, bool);
 }
 
 #endif

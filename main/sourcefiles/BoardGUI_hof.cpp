@@ -52,6 +52,8 @@ char* BoardGUI_hof::flattenVec(std::vector< std::vector<char> > vec, bool isBott
    }
 }
 
+// helper test function used by flatten_vec_identity, should be the inverse
+// of flattenVec
 pair< vector< vector<char> >, bool> BoardGUI_hof::un_flatten_vec(char* chs)
 {
     vector<char> r1, r2, r3, r4;
@@ -74,7 +76,8 @@ pair< vector< vector<char> >, bool> BoardGUI_hof::un_flatten_vec(char* chs)
     return make_pair(rvalue, isRedPlayer);
 }
 
-bool BoardGUI_hof::flatten_vec_identity(vector< vector<char> > vec, bool isRedPlayer)
+// test function for flattenVec
+bool BoardGUI_hof::flatten_vec_test(vector< vector<char> > vec, bool isRedPlayer)
 {
     auto p = un_flatten_vec( flattenVec(vec, isRedPlayer) );
     auto vec_1 = p.first;
