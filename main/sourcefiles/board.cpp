@@ -214,6 +214,7 @@ void board::strike(piece * &attacker,piece * &defender)
               remove_piece(defender);
            else
               remove_piece(attacker);
+              swap(attacker,defender);
       break;
 
       case 'F':
