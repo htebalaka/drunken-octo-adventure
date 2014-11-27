@@ -236,7 +236,7 @@ bool action = false;
 						moveData += to_string(fromX);
 						if(send_Move(moveData,gameData,turn)){
 						
-                  	game.make_move(toY, toX, fromY, fromX);
+                  	game.make_move(toY, toX, fromY, fromX, stop);
 						}else{
 							quit = true;
 							exit_gui_loudly("IT WASNT YOUR MOVE!!!\n");
@@ -260,7 +260,7 @@ bool action = false;
 				moves >> toX;
 				moves >> fromY;
 				moves >> fromX;
-				game.make_move(toY, toX, fromY, fromX);
+				game.make_move(toY, toX, fromY, fromX, stop);
 
          	// this should be replaced with draw_board(gui, game, gameData) once
          	// i'm confident that works correctly
@@ -285,13 +285,12 @@ bool action = false;
 
       	}//exit if turn
 		}  // exit game play loop
-   }  // exit game session loop
    
    
 /**********************************************************************************************
 *                         enter shut down procedures                      
 **********************************************************************************************/
-   exit_gui_quietly();
+   GUI_Globals::exit_gui_quietly();
    return 0;
 }
 

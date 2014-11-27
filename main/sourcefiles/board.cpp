@@ -162,7 +162,7 @@ bool board::is_valid(int rN,int cN,int r,int c)
 *                   post condition: piece has been moved from it's original space to the destination
 **************************************************************************************/
                   
-void board::make_move(int rN ,int cN,int r,int c,bool *won)
+void board::make_move(int rN ,int cN,int r,int c,bool& won)
 {
    if (is_valid(rN,cN,r,c)){
       if (space[rN][cN]->color=='E')

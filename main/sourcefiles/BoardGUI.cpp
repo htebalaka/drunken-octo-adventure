@@ -477,7 +477,6 @@ void BoardGUI::empty_grid()
    mvwaddstr(win, 19, 0, "|   |   |   |   |   |   |   |   |   |   |");
    mvwaddstr(win, 20, 0, "-----------------------------------------");
 
-   mvwaddstr(win, 
    wrefresh(win);
 }
 
