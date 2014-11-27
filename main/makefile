@@ -1,6 +1,6 @@
 CXX=g++
 flags=-lpanel -lncurses -std=c++11
-
+FLAGS= -Wall
 GLOBALS=headers/globalConstants.h
 
 GUI_GLOBALS_H=headers/GUI_Globals.h
@@ -51,7 +51,7 @@ testBoard: ${PLAYER_O} ${BOARD_O} ${GAME_O} ${SERVER_O} $(BOARDGUI_O) $(GUI_GLOB
 
 ${PLAYER_O}: ${GLOBALS} ${PIECE_H} ${PLAYER_H} ${PLAYER_CPP}
 	echo making ${PLAYER_O}
-	$(CXX) $(flags) ${PLAYER_CPP} -c -o ${PLAYER_O}
+	$(CXX) $(FLAGS) ${PLAYER_CPP} -c -o ${PLAYER_O}
 
 ${BOARD_O}: ${GLOBALS} ${PIECE_H} ${PLAYER_H} ${BOARD_H} ${BOARD_CPP}
 	echo making ${BOARD_O}
