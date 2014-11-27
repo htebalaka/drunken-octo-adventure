@@ -12,6 +12,7 @@
 #include "../headers/GUI_Globals.h"
 #include "../headers/BoardGUI_hof.h"
 #include "../headers/BoardGUI.h"
+#include "../headers/Zenity.h"
 
 // the height and width of the game-board window
 #define HEIGHT 21
@@ -348,7 +349,7 @@ bool BoardGUI::move_piece(
             break;
          case 'u':
             // if the player attempts to place the piece then...
-            if (canPlace(cursorY, cursorX, origY, origY))
+            if (canPlace(cursorY, cursorX, origY, origX))
             {
                // execute the move and make the original piece blank
                update(cursorY, cursorX, origY, origX);
