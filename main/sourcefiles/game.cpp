@@ -243,6 +243,7 @@ bool action = false;
                {
                   // this gets executed to check whether we can move a piece
 						// exit_gui_loudly(to_string(toY) + "," + to_string(toX) + "," + to_string(fromY) + "," + to_string(fromX));
+						Zenity::zout(to_string(toY) + to_string(toX) + to_string(fromY) + to_string(fromX));
                   return (game.is_valid(toY, toX, fromY, fromX));
                },
                [&](int toY, int toX, int fromY, int fromX) -> void
