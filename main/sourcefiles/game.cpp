@@ -174,8 +174,6 @@ bool action = false;
 	  	game.set_up(gameData.playerType, positions);
 		game.set_up(((gameData.playerType == 'R') ? 'B' : 'R'), opponentBoard);
 		 // create a board object which the game is played on
-      char redPieces[41];  // declare an array to hold red's initial piece positions
-      char bluePieces[41];  // declare an array to hold blue's initioal piece positions
       bool whowon;  // a boolian variabe to indicate who has won 0 for red 1 for blue
       //  get player positions
       //  place the pieces into the players piece arrays
@@ -184,13 +182,6 @@ bool action = false;
       draw_board(gui, game, gameData);
       using namespace Zenity;
       
-      cout_board(game, gameData);
-      /*getAnswer("title","are you?","yah huh", "no way");
-      getUserText("title","give me!","no");
-      getTableEntry("title", "pick one",
-            {"these","those"},
-            {{"TRUE", "\"hi\""},
-            {"FALSE", "\"bye\""}});*/
 
 /**********************************************************************************************
 *                          main game loop
@@ -244,7 +235,7 @@ whowon=false;
                {
                   // this gets executed to check whether we can move a piece
 						// exit_gui_loudly(to_string(toY) + "," + to_string(toX) + "," + to_string(fromY) + "," + to_string(fromX));
-						Zenity::zout(to_string(toY) + to_string(toX) + to_string(fromY) + to_string(fromX));
+					
                   return (game.is_valid(toY, toX, fromY, fromX));
                },
                [&](int toY, int toX, int fromY, int fromX) -> void
@@ -260,6 +251,7 @@ whowon=false;
 						moveData += ' ';
 						moveData += to_string(fromX);
 						if(send_Move(moveData,gameData,turn)){
+							Zenity:zout("Move sent: " + to_string(toY) + to_string(toX) + to_string(fromY) + to_string(fromX));
                   	game.make_move(toY, toX, fromY, fromX);
 						}else{
 							quit = true;
@@ -284,6 +276,7 @@ whowon=false;
 			moves >> toX;
 			moves >> fromY;
 			moves >> fromX;
+			Zenity:zout("Move recieved: " + to_string(toY) + to_string(toX) + to_string(fromY) + to_string(fromX));
 			game.make_move(toY, toX, fromY, fromX);
 
          // this should be replaced with draw_board(gui, game, gameData) once
