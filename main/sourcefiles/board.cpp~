@@ -162,7 +162,7 @@ bool board::is_valid(int rN,int cN,int r,int c)
 *                   post condition: piece has been moved from it's original space to the destination
 **************************************************************************************/
                   
-void board::make_move(int rN ,int cN,int r,int c,bool *won)
+void board::make_move(int rN ,int cN,int r,int c,bool& won)
 {
    if (is_valid(rN,cN,r,c)){
       if (space[rN][cN]->color=='E')
@@ -193,7 +193,7 @@ void board::strike(piece * &attacker,piece * &defender,bool &won)
       case '6':
       case '7':
       case 'S':
-      case '9':
+      case '8':
          if(defender->rank>attacker->rank){
             remove_piece(defender);
             swap(defender,attacker);
@@ -206,21 +206,15 @@ void board::strike(piece * &attacker,piece * &defender,bool &won)
             remove_piece(attacker);
       break;
 
-      case '8':
-         if ((attacker->rank=='8')&&(defender->rank=='1')){
-            remove_piece(defender);
-            swap(attacker,defender);
-         }
-         else
-            remove_piece(attacker);
-      break;
+ 
 
       case 'B':
-           if(attacker->rank=='9')
+           if(attacker->rank=='8')
               remove_piece(defender);
+              swap(attacker,defender);
            else
               remove_piece(attacker);
-              swap(attacker,defender);
+              
       break;
 
       case 'F':
