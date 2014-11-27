@@ -69,12 +69,12 @@ string Zenity::getTableEntry(string title, string text, vector<string> columns, 
 // and /yes/ or /no/ buttons.
 bool Zenity::getAnswer(string title, string text, string ok, string no)
 {
-    return getCmdOutput(
+    return "y\n" == getCmdOutput(
             "if $(zenity --question "
             "--title=\"" + title + "\" "
             "--text=\"" + text + "\" "
             "--ok-label=\"" + ok + "\" "
-            "--cancel-label=\"" + no + "\"); then echo y; else echo n;fi") == "y";
+            "--cancel-label=\"" + no + "\"); then echo y; else echo n;fi");
 }
 
 // same as above, but optionally reads from standard in"y";
