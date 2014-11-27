@@ -225,6 +225,7 @@ whowon=false;
 			while(!whowon){
 			draw_board(gui, game, gameData);
 			if(turn == true){
+			Zenity::zout("Its Your Turn!");
          gui.wait_for_player(
                [&](int y, int x) -> bool
                {
@@ -251,7 +252,7 @@ whowon=false;
 						moveData += ' ';
 						moveData += to_string(fromX);
 						if(send_Move(moveData,gameData,turn)){
-							Zenity:zout("Move sent: " + to_string(toY) + to_string(toX) + to_string(fromY) + to_string(fromX));
+						
                   	game.make_move(toY, toX, fromY, fromX);
 						}else{
 							quit = true;
@@ -276,7 +277,6 @@ whowon=false;
 			moves >> toX;
 			moves >> fromY;
 			moves >> fromX;
-			Zenity:zout("Move recieved: " + to_string(toY) + to_string(toX) + to_string(fromY) + to_string(fromX));
 			game.make_move(toY, toX, fromY, fromX);
 
          // this should be replaced with draw_board(gui, game, gameData) once
