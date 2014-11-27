@@ -148,12 +148,13 @@ bool action = false;
                {
                   // this gets executed to check whether we can pickup a piece 
 						bool pickup = game.can_pickup(y, x, gameData.playerType);
-						if(pickup){
+							char spaceColor = game.get_space_color(y,x);
+						if(spaceColor == gameData.playerType){
 							exit_gui_loudly("TRUE!");
 						}else{
 							exit_gui_loudly("FALSE");
 						}        
-                  return (game.can_pickup(y, x, gameData.playerType));
+                  return (spaceColor == gameData.playerType);
                },
                [&](int toY, int toX, int fromY, int fromX) -> bool
                {

@@ -293,11 +293,11 @@ void board::update_side(piece * current)
 *                                 making move
 ******************************************************************************************/
 
-bool board::can_pickup(int row,int column,char color)
+bool board::can_pickup(int row,int column,char colour)
 {
 
-	
-   return((space[row][column])->color == color);
+
+   return((space[row][column])->color == colour);
 
 }
 
