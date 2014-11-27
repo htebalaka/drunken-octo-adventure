@@ -231,7 +231,7 @@ whowon=false;
          // update the board - the board object will update the players piece array
 
          // this function gets called to give control to the current player
-
+			while(!whowon){
 			if(turn == true){
          gui.wait_for_player(
                [&](int y, int x) -> bool
@@ -310,7 +310,8 @@ whowon=false;
         	}
 
          // if either player has won exit loop
-      }  // exit game play loop
+      }
+		}  // exit game play loop
       won(whowon);  //  send who won the game to the end of game function
    }  // exit game session loop
    
