@@ -45,9 +45,9 @@ GAME_O=objectfiles/game.o
 .PHONY: gui
 .PHONY: test
 
-testBoard: ${PLAYER_O} ${BOARD_O} ${GAME_O} ${SERVER_O} $(BOARDGUI_O) $(GUI_GLOBALS_O) ${BOARDGUI_HOF_O}
+testBoard: ${PLAYER_O} ${BOARD_O} ${GAME_O} ${SERVER_O} $(BOARDGUI_O) $(GUI_GLOBALS_O) ${BOARDGUI_HOF_O} ${ZENITY_O}
 	echo making testBoard
-	$(CXX) $(flags) ${PLAYER_O} ${BOARD_O} ${GAME_O} ${SERVER_O} $(BOARDGUI_O) $(GUI_GLOBALS_O) ${BOARDGUI_HOF_O} -o testboard
+	$(CXX) $(flags) $(ZENITY_O) ${PLAYER_O} ${BOARD_O} ${GAME_O} ${SERVER_O} $(BOARDGUI_O) $(GUI_GLOBALS_O) ${BOARDGUI_HOF_O} -o testboard
 
 ${PLAYER_O}: ${GLOBALS} ${PIECE_H} ${PLAYER_H} ${PLAYER_CPP}
 	echo making ${PLAYER_O}

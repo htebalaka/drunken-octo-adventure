@@ -40,6 +40,7 @@ string Zenity::getTableEntry(string title, string text, vector<string> columns, 
             "zenity --list "
             "--title=\"" + title + "\" "
             "--text=\"" + text + "\" "
+            "--radiolist --editable --print-column=ALL "
             + columnconcat + " " + entriesconcat);
 }
 
