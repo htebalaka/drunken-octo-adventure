@@ -1,6 +1,6 @@
 
 #include "../headers/BoardGUI_hof.h"
-
+#include <string>
 using namespace std;
 
 // returns a predicate function for the valid bounds of the GUI for:
@@ -31,22 +31,21 @@ std::function<bool (int,int)> BoardGUI_hof::boundsCheck(GAME_MODE mode)
 // Laws:
 // id = reverse . flattenVec(v, b) where
 // reverse :: Char* -> (Vector (Vector Char), Bool)
-char* BoardGUI_hof::flattenVec(std::vector< std::vector<char> > vec, bool isBottomPlayer)
+void BoardGUI_hof::flattenVec(std::vector< std::vector<char> > vec, bool isBottomPlayer, std::string &positions)
 {
-   static char rvalue[41];
-   rvalue[0] = isBottomPlayer ? 'R' : 'B';
-   int i = 1;
+   int i = 0;
    for (auto vec2 : vec)
    {
       for (auto e : vec2)
       {
          if (i==41)
          {
-            return rvalue;
+            return;
          }
          else
          {
-            rvalue[i] = e;
+            positions += e;
+				
          }
       }
    }
@@ -54,7 +53,7 @@ char* BoardGUI_hof::flattenVec(std::vector< std::vector<char> > vec, bool isBott
 
 // helper test function used by flatten_vec_identity, should be the inverse
 // of flattenVec
-pair< vector< vector<char> >, bool> BoardGUI_hof::un_flatten_vec(char* chs)
+/*pair< vector< vector<char> >, bool> BoardGUI_hof::un_flatten_vec(char* chs)
 {
     vector<char> r1, r2, r3, r4;
     r1.resize(10, '_');
@@ -84,4 +83,4 @@ bool BoardGUI_hof::flatten_vec_test(vector< vector<char> > vec, bool isRedPlayer
     auto isRedPlayer_1 = p.second;
 
     return vec_1==vec and isRedPlayer_1==isRedPlayer;
-}
+}*/

@@ -72,7 +72,7 @@ void draw_board(BoardGUI& gui, board& game, game_Info& gameData)
          {
          // this gets executed to test whether a location is empty
          //return false;
-         return game.theres_no_piece_at(y,x);
+         return !game.theres_no_piece_at(y,x);
          },
          [&](int y, int x) -> bool
          {
@@ -152,9 +152,19 @@ bool action = false;
 	BoardGUI gui = smart_init_board();
    bool isBottomPlayer = gameData.playerType == 'R';
 	auto starting_board = gui.new_game(isBottomPlayer);
-	char *positions = BoardGUI_hof::flattenVec(starting_board, isBottomPlayer);
-	char *opponentBoard = sync_Board(positions,gameData);
-
+	string rpositions = "";
+	string ropponentBoard = "";
+	BoardGUI_hof::flattenVec(starting_board, isBottomPlayer, rpositions);
+	sync_Board(rpositions,gameData, ropponentBoard);
+	char positions[40];
+	char opponentBoard[40];
+	for(int i =0;i<=40;i++){
+		positions[i] = rpositions[i];
+		opponentBoard[i] = ropponentBoard[i];
+	}
+	exit_gui_quietly();
+	cout << positions << endl;
+	stop = true;
 /**********************************************************************************************
 *                       enter game session
 **********************************************************************************************/
@@ -164,7 +174,7 @@ bool action = false;
 **********************************************************************************************/
 
       board game;
-	  	game.set_up(gameData.playerType, positions+1);
+	  	game.set_up(gameData.playerType, positions);
 		game.set_up(((gameData.playerType == 'R') ? 'B' : 'R'), opponentBoard+1);
 		exit_gui_loudly(string(positions) + "\n" + string(opponentBoard));
 		 // create a board object which the game is played on
