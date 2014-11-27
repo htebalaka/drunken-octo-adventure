@@ -50,6 +50,5 @@ string recv_f(int sockfd);
 game_Info create_Game(int port, string host, string name, string userName);	//adds a new game to the gameFile	
 bool clear_Game(string name);
 game_Info client_Connect(); //connect client(player 2) to their chosen game, returns socket ID
-
 game_Info host_Connect(); //creates the game and waits for player 2.
 bool close_Connection(int sockfd);
