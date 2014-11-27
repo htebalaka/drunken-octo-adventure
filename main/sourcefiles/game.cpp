@@ -150,9 +150,9 @@ bool action = false;
 						bool pickup = game.can_pickup(y, x, gameData.playerType);
 							char spaceColor = game.get_space_color(y,x);
 						if(spaceColor == gameData.playerType){
-							exit_gui_loudly("TRUE!");
+							exit_gui_loudly(to_string(x) + " is x, " + to_string(y) + " is y.... TRUE");
 						}else{
-							exit_gui_loudly("FALSE");
+							exit_gui_loudly(to_string(x) + " is x, " + to_string(y) + " is y...FASLE");
 						}        
                   return (spaceColor == gameData.playerType);
                },
