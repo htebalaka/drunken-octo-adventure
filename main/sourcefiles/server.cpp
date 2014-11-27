@@ -29,7 +29,7 @@ using namespace std;
 // zenity doesn't always work well over ssh, so setting this to
 // false will fall back to using cin/cout for setting up the
 // networking
-bool useZenity = true;
+bool useZenity = false;
 
 /**********************************************************************************************
       Gets Ip address data for socket

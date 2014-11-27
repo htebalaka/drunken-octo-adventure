@@ -164,6 +164,7 @@ bool action = false;
 	}
 	exit_gui_quietly();
 	cout << positions << endl;
+	cout << opponentBoard << endl;
 	stop = true;
 /**********************************************************************************************
 *                       enter game session
