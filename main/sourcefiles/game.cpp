@@ -172,7 +172,7 @@ bool action = false;
 
       board game;
 	  	game.set_up(gameData.playerType, positions);
-		game.set_up(((gameData.playerType == 'R') ? 'B' : 'R'), opponentBoard+1);
+		game.set_up(((gameData.playerType == 'R') ? 'B' : 'R'), opponentBoard);
 		 // create a board object which the game is played on
       char redPieces[41];  // declare an array to hold red's initial piece positions
       char bluePieces[41];  // declare an array to hold blue's initioal piece positions
@@ -232,6 +232,7 @@ whowon=false;
 
          // this function gets called to give control to the current player
 			while(!whowon){
+			draw_board(gui, game, gameData);
 			if(turn == true){
          gui.wait_for_player(
                [&](int y, int x) -> bool
