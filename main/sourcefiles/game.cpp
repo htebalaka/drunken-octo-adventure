@@ -141,19 +141,23 @@ bool action = false;
          // update the board - the board object will update the players piece array
 
          // this function gets called to give control to the current player
+         exit_gui_loudly("wait_for_player");
          gui.wait_for_player(
                [&](int y, int x) -> bool
                {
                   // this gets executed to check whether we can pickup a piece
+                  exit_gui_loudly("can_pickup");
                   return (game.can_pickup(y, x, gameData.playerType));
                },
                [&](int toY, int toX, int fromY, int fromX) -> bool
                {
                   // this gets executed to check whether we can move a piece
+                  exit_gui_loudly("is_valid");
                   return (game.is_valid(toY, toX, fromY, fromX));
                },
                [&](int toY, int toX, int fromY, int fromX) -> void
                {
+                  exit_gui_loudly("exec");
                   // this gets executed when we make a move
 						std::string moveData;
 						moveData += std::to_string(toY);
