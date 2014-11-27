@@ -322,7 +322,8 @@ char board::get_rank(int row,int column,char color)
 {
    if (space[row][column]->color==color)
       return space[row][column]->rank;
-   return '?';
+   else if (space[row][column]->color =='L') return 'L';
+   else return '?';
 }
 
 
