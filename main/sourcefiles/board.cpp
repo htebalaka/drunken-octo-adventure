@@ -108,14 +108,14 @@ bool board::is_valid(int rN,int cN,int r,int c)
       case '6':
       case '7':
       case 'S':  // Spy
-      case '9':  // Miner
+      case '8':  // Miner
            
             if ((abs(rN-r)+abs(cN-c)==1)&&(space[rN][cN]->color!=space[r][c]->color))
                return true;
             else
               return false;
          break;
-      case '8':  // Scout
+      case '9':  // Scout
             if(((rN==r)||(cN==c))&&(space[rN][cN]->color=='E')){
             //  if there is anything between the scout and it's destination the move is invalid
                if (r-rN<0)
@@ -194,6 +194,7 @@ void board::strike(piece * &attacker,piece * &defender,bool &won)
       case '7':
       case 'S':
       case '8':
+      case '9';
          if(defender->rank>attacker->rank){
             remove_piece(defender);
             swap(defender,attacker);
@@ -299,8 +300,8 @@ void board::update_side(piece * current)
 bool board::can_pickup(int row,int column,char colour)
 {
 
-	
-   return((space[row][column])->color == colour);
+   	
+   return((space[row][column])->color == colour && space[row][column]->rank!='F' && space[row][column]->rank!='B' );
 
 }
 
