@@ -121,26 +121,26 @@ game_Info client_Connect(){
    input: players board data, game_Info struct
    output: opponents board data
 **********************************************************************************************/
-char * sync_Board(string board, game_Info gameData){
-	char OboardData[MAXDATASIZE];
-	char boardData[MAXDATASIZE];
-   fillarray(board, boardData);
+void sync_Board(string board, game_Info gameData, string &positions){
+	char opponentBoard[MAXDATASIZE];
+	char position[MAXDATASIZE];
+   fillarray(board, position);
    switch(gameData.playerType){//sockets are a 1 way street, cant send and recieve at the same time...
       case 'B'://host  always sends first
-         send(gameData.sockfd, boardData , MAXDATASIZE, 0);//send board data to client
-         recv(gameData.sockfd, OboardData , MAXDATASIZE, 0);//recieve clients board data
+         send(gameData.sockfd, position , MAXDATASIZE, 0);//send board data to client
+         recv(gameData.sockfd, opponentBoard , MAXDATASIZE, 0);//recieve clients board data
       break;
       case 'R'://client recieves first
-         recv(gameData.sockfd, OboardData , MAXDATASIZE, 0);//recieve hosts board data
-         send(gameData.sockfd, boardData , MAXDATASIZE, 0);//send board data to host           
+         recv(gameData.sockfd, opponentBoard , MAXDATASIZE, 0);//recieve hosts board data
+         send(gameData.sockfd, position , MAXDATASIZE, 0);//send board data to host           
       break;
       default://something went wrong!
          cout << "ERROR, Unable to determine player type!\n";
-   		return "";
+   		return;
          break;
    }
-	
-	return OboardData;
+	positions = opponentBoard;
+	return;
 }
 /**********************************************************************************************
   send_move, Passes move data to other player
