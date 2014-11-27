@@ -221,11 +221,11 @@ bool action = false;
           *                  player who creates the game is blue and gets to go first
           **********************************************************************************************/
 
-
-         if (winner){  //  check to see if the blue player has won or if red has quit the game 
+whowon=false;
+         /*if (winner){  //  check to see if the blue player has won or if red has quit the game 
             quit=true; 
             whowon=false;  // flag is false indicating red is the winner
-         }
+         }*/
  
          //  if not get the red players move
          // update the board - the board object will update the players piece array
