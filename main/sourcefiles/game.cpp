@@ -141,18 +141,23 @@ bool action = false;
          // update the board - the board object will update the players piece array
 
          // this function gets called to give control to the current player
-         exit_gui_loudly("wait_for_player");
+
+			if(turn == true){
          gui.wait_for_player(
                [&](int y, int x) -> bool
                {
-                  // this gets executed to check whether we can pickup a piece
-                  exit_gui_loudly("can_pickup");
+                  // this gets executed to check whether we can pickup a piece 
+						bool pickup = game.can_pickup(y, x, gameData.playerType);
+						if(pickup){
+							exit_gui_loudly("TRUE!");
+						}else{
+							exit_gui_loudly("FALSE");
+						}        
                   return (game.can_pickup(y, x, gameData.playerType));
                },
                [&](int toY, int toX, int fromY, int fromX) -> bool
                {
                   // this gets executed to check whether we can move a piece
-                  exit_gui_loudly("is_valid");
                   return (game.is_valid(toY, toX, fromY, fromX));
                },
                [&](int toY, int toX, int fromY, int fromX) -> void
@@ -183,6 +188,7 @@ bool action = false;
 
 
 			//wait for other player move here
+			}else if(turn == false){
 			std::string otherPlayerMove = get_Move(gameData, turn);	
 			istringstream moves(otherPlayerMove);	
 			int toY;
@@ -212,11 +218,10 @@ bool action = false;
                   // location
                   return game.get_rank(y, x, gameData.playerType);
                });
-         game.make_move(row,column,newRow,newColumn);
          // check to see if the blue player has won or if blue has quit the game
          // if not get the red players move 
          // update the board
-         game.make_move(row,column,newRow,newColumn); 
+        	}
 
          // if either player has won exit loop
       }  // exit game play loop
