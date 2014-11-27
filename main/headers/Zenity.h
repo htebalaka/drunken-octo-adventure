@@ -19,6 +19,14 @@ namespace Zenity
            std::string text,
            std::vector<std::string> columnNames,
            std::vector< std::vector<std::string> > columnEntries);
+
+   int chooseLabel(
+         std::string title,
+         std::string text,
+         std::string column,
+         std::vector< std::string > columnEntries,
+         bool useZenity);
+
    bool getAnswer(std::string, std::string, std::string, std::string);
    bool getAnswer(std::string, std::string, std::string, std::string, bool);
 }

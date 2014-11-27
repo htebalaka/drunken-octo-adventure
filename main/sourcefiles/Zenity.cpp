@@ -70,13 +70,14 @@ string Zenity::getTableEntry(string title, string text, vector<string> columns, 
 bool Zenity::getAnswer(string title, string text, string ok, string no)
 {
     return getCmdOutput(
-            "zenity --question "
+            "if $(zenity --question "
             "--title=\"" + title + "\" "
             "--text=\"" + text + "\" "
             "--ok-label=\"" + ok + "\" "
-            "--cancel-label=\"" + no + "\" ") == ok;
+            "--cancel-label=\"" + no + "\"); then echo y; else echo n;fi") == "y";
 }
-// same as above, but optionally reads from standard input
+
+// same as above, but optionally reads from standard in"y";
 bool Zenity::getAnswer(string title, string text, string ok, string no, bool useZenity)
 {
    if (useZenity)

@@ -57,7 +57,7 @@ void sigchld_handler(int s)
 game_Info client_Connect(){
 	game_Info gameData;
 
-   string userName = Zenity::getUserText("", "Please enter a user name:", "", true);
+   string userName = Zenity::getUserText("", "Please enter a user name:", "", useZenity);
 
    /*
 	cout << "Please Enter a Username:\n";
