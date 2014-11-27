@@ -45,7 +45,7 @@ string get_Move(game_Info gameData, bool &turn);
 int wait_Game(game_Info &gameData, bool reload);
 void fillarray(string value, char * array);
 game_Info get_Game();
-char *sync_Board(string board, game_Info gameData);
+char * sync_Board(string board, game_Info gameData);
 string recv_f(int sockfd);
 game_Info create_Game(int port, string host, string name, string userName);	//adds a new game to the gameFile	
 bool clear_Game(string name);

@@ -123,6 +123,7 @@ bool action = false;
       board game;
 	  	game.set_up(gameData.playerType, positions+1);
 		game.set_up(((gameData.playerType == 'R') ? 'B' : 'R'), opponentBoard+1);
+		exit_gui_loudly(string(positions) + "\n" + string(opponentBoard));
 		 // create a board object which the game is played on
       char redPieces[41];  // declare an array to hold red's initial piece positions
       char bluePieces[41];  // declare an array to hold blue's initioal piece positions

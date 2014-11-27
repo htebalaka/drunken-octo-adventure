@@ -75,13 +75,11 @@ game_Info client_Connect(){
 				p->ai_protocol)) == -1) {
 			perror("client: socket");
 			exit(EXIT_FAILURE);
-			continue;
 		}
 		if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
 			close(sockfd);
 			perror("client: connect");
 			exit(EXIT_FAILURE);
-			continue;
 		}
 		break;
 	}
@@ -112,7 +110,7 @@ game_Info client_Connect(){
    input: players board data, game_Info struct
    output: opponents board data
 **********************************************************************************************/
-char *sync_Board(string board, game_Info gameData){
+char * sync_Board(string board, game_Info gameData){
 	char OboardData[MAXDATASIZE];
 	char boardData[MAXDATASIZE];
    fillarray(board, boardData);
@@ -134,9 +132,9 @@ char *sync_Board(string board, game_Info gameData){
 	return OboardData;
 }
 /**********************************************************************************************
-  make_Move, Passes move data to other player, returns other players move
-   input: move data, and game_Info struct
-   output: returns move data if it your wasnt turn, or 0 if it was your turn
+  send_move, Passes move data to other player
+   input: move data, game_Info struct, turn bool
+   output: true if sent, false it it wasnt your turn
 **********************************************************************************************/
 bool send_Move(string move, game_Info gameData, bool &turn){
 	char movedata[MAXDATASIZE];
