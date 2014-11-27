@@ -248,7 +248,7 @@ bool action = false;
                },
                [&](int toY, int toX, int fromY, int fromX) -> void
                {
-                  exit_gui_loudly("exec");
+                  
                   // this gets executed when we make a move
 						std::string moveData;
 						moveData += to_string(toY);
