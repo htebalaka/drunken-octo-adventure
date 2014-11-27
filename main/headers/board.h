@@ -17,7 +17,7 @@ class board{
       board();
       ~board(){}
 
-      void set_up(char player_positions[]);  // put the players pieces on the board
+      void set_up(char color, char player_positions[]);  // put the players pieces on the board
       bool winner(char );  //  return true if a player has won the game
       void possible_moves(piece);   // indicate to the user what the possible moves are
       bool is_valid(int,int,int,int);  //  return if the move is valid or not

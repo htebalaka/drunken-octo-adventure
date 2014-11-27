@@ -41,12 +41,12 @@ return space[y][x]->color;
 *    pre-condition:  array for player_pieces must be in range of their starting position 
 *    post-condition:  board contains the positions of player
 ***********************************************************************************************/
-void board::set_up(char startPositions[])
+void board::set_up(char color, char startPositions[])
 {
    int r=0;
    int c=0;
-   if (startPositions[0]=='B')
-      for (int pos=1;pos<numberOfPieces+1;pos++){
+   if (color=='B')
+      for (int pos=0;pos<numberOfPieces;pos++){
          space[r][c]->rank=startPositions[pos];
          space[r][c]->color='B';
          blue.place_piece(space[r][c],startPositions[pos],'B',pos-1);
@@ -56,9 +56,9 @@ void board::set_up(char startPositions[])
             r++;
          }
    } 
-   else if (startPositions[0]=='R'){
+   else if (color=='R'){
       r=6;
-      for (int pos=1;pos<numberOfPieces+1;pos++){
+      for (int pos=0;pos<numberOfPieces;pos++){
          space[r][c]->rank=startPositions[pos];
          space[r][c]->color='R';
          red.place_piece(space[r][c],startPositions[pos],'R',pos-1);
@@ -296,7 +296,7 @@ void board::update_side(piece * current)
 bool board::can_pickup(int row,int column,char colour)
 {
 
-
+	
    return((space[row][column])->color == colour);
 
 }
