@@ -32,7 +32,7 @@ struct game_Info{
 };
 
 const int maxLength = 256;
-const int defaultPorts[] = {4000,4001,4002,3922,4004,4005,4006,4007,4008,4009,4010};//availible ports for the games operation.
+const int defaultPorts[] = {4000,4001,4002,4003,4004,4005,4006,4007,4008,4009,4010};//availible ports for the games operation.
 const string gameFile= "connections.txt";
 
 #define BACKLOG 10	 // how many pending connections queue will hold
@@ -50,6 +50,5 @@ string recv_f(int sockfd);
 game_Info create_Game(int port, string host, string name, string userName);	//adds a new game to the gameFile	
 bool clear_Game(string name);
 game_Info client_Connect(); //connect client(player 2) to their chosen game, returns socket ID
-
 game_Info host_Connect(); //creates the game and waits for player 2.
 bool close_Connection(int sockfd);

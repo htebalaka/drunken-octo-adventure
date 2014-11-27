@@ -24,6 +24,7 @@
 #include"../headers/sockets.h"
 #include "../headers/globalConstants.h"
 using namespace std;
+
 /**********************************************************************************************
       Gets Ip address data for socket
       self contained, not to be used out of server.cpp
@@ -73,11 +74,13 @@ game_Info client_Connect(){
 		if ((sockfd = socket(p->ai_family, p->ai_socktype,
 				p->ai_protocol)) == -1) {
 			perror("client: socket");
+			exit(EXIT_FAILURE);
 			continue;
 		}
 		if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
 			close(sockfd);
 			perror("client: connect");
+			exit(EXIT_FAILURE);
 			continue;
 		}
 		break;
@@ -301,7 +304,7 @@ game_Info get_Game(){
 	if(gamefile.is_open()){//get number of availible games
 		while(!gamefile.eof()){
 			getline(gamefile,line);
-			if(line != ""){
+			if(line[0] == '4'){
 				numGames++;
 			}
 		}
@@ -313,29 +316,37 @@ game_Info get_Game(){
 	if(gameData.is_open()){//go through file and add each game to an array of game_Info structs
 		while(!gameData.eof()){
 			getline(gameData,line);
-			istringstream iss(line);
-			string word;
-			iss >> games[select].port;
-			iss >> games[select].host;
-			iss >> games[select].name;
-         iss >> games[select].userName;
-			select++;
+			if(line[0] == '4'){
+				istringstream iss(line);
+				string word;
+				iss >> games[select].port;
+				iss >> games[select].host;
+				iss >> games[select].name;
+         	iss >> games[select].userName;
+				select++;
+			}
 		}
 	}
 	gamefile.close();
-	cout << "Availible Games:\n";
-	cout << "Games:" << numGames << endl;
-	for(int i=0;i < (numGames);i++){//display list of games to user
-		cout << i << " : " << games[i].name << endl;
-	}
-	cout << "Enter Game: ";//require user to enter desired game number
 	int dGame;
-	do{
-		cin >> dGame;
-		if((dGame < 0) || (dGame > (numGames))){//make sure selection is valid
-			cout << "**ERROR Invalid Game Selection!\nPlease Enter Game: ";
+	if(numGames > 0){
+		cout << "Availible Games:\n";
+		cout << "Games:" << numGames << endl;
+		for(int i=0;i < (numGames);i++){//display list of games to user
+			cout << i << " : " << games[i].name << endl;
 		}
-	}while((dGame < 0) || (dGame > (numGames-1)));
+		cout << "Enter Game: ";//require user to enter desired game number
+		
+		do{
+			cin >> dGame;
+			if((dGame < 0) || (dGame > (numGames-1))){//make sure selection is valid
+				cout << "**ERROR Invalid Game Selection!\nPlease Enter Game: ";
+			}
+		}while((dGame < 0) || (dGame > (numGames-1)));
+	}else{
+		cout << "**ERROR No Games Availible!\n";
+		exit(EXIT_FAILURE);
+	}
 	return games[dGame];
 }
 /**********************************************************************************************

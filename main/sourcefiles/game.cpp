@@ -129,11 +129,11 @@ bool action = false;
 			break;
 			case 2:
 				gameData = client_Connect();
-				if(gameData.sockfd){
+				if(gameData.sockfd && (gameData.sockfd != -1)){
 					gameData.playerType = 'R';
 					action = true;
 				}else{
-					cerr << "Could Not Connect Socket\n";
+					break;
 				}
 			break;
 			default:
@@ -243,21 +243,19 @@ bool action = false;
                   exit_gui_loudly("exec");
                   // this gets executed when we make a move
 						std::string moveData;
-						moveData += std::to_string(toY);
+						moveData += to_string(toY);
 						moveData += ' ';
-						moveData += std::to_string(toX);
+						moveData += to_string(toX);
 						moveData += ' ';
-						moveData += std::to_string(fromY);
+						moveData += to_string(fromY);
 						moveData += ' ';
-						moveData += std::to_string(fromX);
-						
-						
+						moveData += to_string(fromX);
 						if(send_Move(moveData,gameData,turn)){
                   	game.make_move(toY, toX, fromY, fromX);
 						}else{
 							quit = true;
-							exit_gui_quietly();
-							cout << "IT WASNT YOUR MOVE!!!\n";
+							exit_gui_loudly("IT WASNT YOUR MOVE!!!\n");
+
 			
 						}
                });
