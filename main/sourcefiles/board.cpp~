@@ -77,9 +77,10 @@ void board::set_up(char color, char startPositions[])
 *                post-condition: returns true if red wins false if blue wins
 ********************************************************************************************/
 
-bool board::winner(char winnerColor)
+bool board::winner(char winnerColor, bool &won)
 {
 //  sends who won the game to the players GUI
+   won=true;  // updates the flag for game play 
    if (winnerColor=='B')
       return false;
    else
@@ -161,12 +162,12 @@ bool board::is_valid(int rN,int cN,int r,int c)
 *                   post condition: piece has been moved from it's original space to the destination
 **************************************************************************************/
                   
-void board::make_move(int rN ,int cN,int r,int c)
+void board::make_move(int rN ,int cN,int r,int c,bool *won)
 {
    if (is_valid(rN,cN,r,c)){
       if (space[rN][cN]->color=='E')
          swap(space[r][c],space[rN][cN]);
-      else strike(space[r][c],space[rN][cN]);   // if the space is not empty call strike method
+      else strike(space[r][c],space[rN][cN],won);   // if the space is not empty call strike method
    } 
 }  
 
@@ -176,10 +177,15 @@ void board::make_move(int rN ,int cN,int r,int c)
 *                   post condition: the higher ranking piece is removed from board
 *******************************************************************************************/
 
-void board::strike(piece * &attacker,piece * &defender)
+void board::strike(piece * &attacker,piece * &defender,bool &won)
 {
    switch (defender->rank){
       case '1':
+          if (attacker->rank=='S'){
+            remove_piece(defender);
+            swap(defender,attacker);
+            return;
+          } 
       case '2':
       case '3':
       case '4':
@@ -214,10 +220,12 @@ void board::strike(piece * &attacker,piece * &defender)
               remove_piece(defender);
            else
               remove_piece(attacker);
+              swap(attacker,defender);
       break;
 
       case 'F':
          winner(attacker->color);
+         swap(attacker,defender);
       break;
       default:
          return;
@@ -322,7 +330,7 @@ char board::get_rank(int row,int column,char color)
 {
    if (space[row][column]->color==color)
       return space[row][column]->rank;
-   else if (space[row][column]->color =='L') return 'L';
+   else if (space[row][column]->rank =='L') return 'L';
    else return '?';
 }
 

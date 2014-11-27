@@ -95,7 +95,7 @@ int main()
 {
 bool stop = false;
 bool turn = false;
-bool winner = false;
+string winner = "";
 /**********************************************************************************************
 *                       create a session and find a challenger
                         input required: none;
@@ -150,11 +150,11 @@ bool action = false;
 	using namespace GUI_Globals;
 	init_gui();
 	BoardGUI gui = smart_init_board();
+	Zenity::zout("Set your Players!");
    bool isBottomPlayer = gameData.playerType == 'R';
 	auto starting_board = gui.new_game(isBottomPlayer);
 	string rpositions = "";
 	string ropponentBoard = "";
-	Zenity::zout("Set your Players!");
 	BoardGUI_hof::flattenVec(starting_board, isBottomPlayer, rpositions);
 	sync_Board(rpositions,gameData, ropponentBoard);
 	char positions[40];
@@ -166,7 +166,7 @@ bool action = false;
 /**********************************************************************************************
 *                       enter game session
 **********************************************************************************************/
-   while (!stop){      // while the players want to play maintain a connection
+        // while the players want to play maintain a connection
 /**********************************************************************************************
 *                      create a new game
 **********************************************************************************************/
@@ -175,7 +175,7 @@ bool action = false;
 	  	game.set_up(gameData.playerType, positions);
 		game.set_up(((gameData.playerType == 'R') ? 'B' : 'R'), opponentBoard);
 		 // create a board object which the game is played on
-      bool whowon;  // a boolian variabe to indicate who has won 0 for red 1 for blue
+      bool whowon;// a boolian variabe to indicate who has won 0 for red 1 for blue
       //  get player positions
       //  place the pieces into the players piece arrays
       //  place the pieces on the board
@@ -197,14 +197,6 @@ bool action = false;
       bool quit=false;  // a flag to control game play loop
       int row,column,newRow,newColumn;  // variables to pass coordinates to board object
       row=column=newRow=newColumn=0;  // initialize coordinate variables to 0
-      whowon=true;  // indicator to tell who won the game 0 for blue  1 for red
-
-      // refresh the board so both players can see that the opponent has placed
-      // their pieces. this code is pretty much just copy/pasted from the main
-      // game loop below, and should be refactored a little
-      //
-
-
       if (!quit){
          // all in game functions and proper game play logic in here
 
@@ -213,17 +205,7 @@ bool action = false;
           *                  player who creates the game is blue and gets to go first
           **********************************************************************************************/
 
-whowon=false;
-         /*if (winner){  //  check to see if the blue player has won or if red has quit the game 
-            quit=true; 
-            whowon=false;  // flag is false indicating red is the winner
-         }*/
- 
-         //  if not get the red players move
-         // update the board - the board object will update the players piece array
-
-         // this function gets called to give control to the current player
-			while(!whowon){
+			while (!stop){//while no winner
 			draw_board(gui, game, gameData);
 			if(turn == true){
 			Zenity::zout("Its Your Turn!");
@@ -236,7 +218,7 @@ whowon=false;
                [&](int toY, int toX, int fromY, int fromX) -> bool
                {
                   // this gets executed to check whether we can move a piece
-						// exit_gui_loudly(to_string(toY) + "," + to_string(toX) + "," + to_string(fromY) + "," + to_string(fromX));
+						// exit_gui_loudly(to_string(toY) + "," + to_string(toX) + "," + to_string(fromY) + "," + 						to_string(fromX));
 					
                   return (game.is_valid(toY, toX, fromY, fromX));
                },
@@ -268,46 +250,41 @@ whowon=false;
 
 			//wait for other player move here
 			}else if(turn == false){
-			std::string otherPlayerMove = get_Move(gameData, turn);	
-			istringstream moves(otherPlayerMove);	
-			int toY;
-			int toX;
-			int fromY;
-			int fromX;
-			moves >> toY;
-			moves >> toX;
-			moves >> fromY;
-			moves >> fromX;
-			game.make_move(toY, toX, fromY, fromX);
+				std::string otherPlayerMove = get_Move(gameData, turn);	
+				istringstream moves(otherPlayerMove);	
+				int toY;
+				int toX;
+				int fromY;
+				int fromX;
+				moves >> toY;
+				moves >> toX;
+				moves >> fromY;
+				moves >> fromX;
+				game.make_move(toY, toX, fromY, fromX);
 
-         // this should be replaced with draw_board(gui, game, gameData) once
-         // i'm confident that works correctly
-         gui.refresh_board(
-               [&](int y, int x) -> bool
-               {
-                  // this gets executed to test whether a location is empty
-                  return game.theres_no_piece_at(y,x);
-               },
-               [&](int y, int x) -> bool
-               {
-                  // this gets executed to see if a non-empty location is red
-                  return (game.get_space_color(y,x) == 'R') ? true : false;
-               },
-               [&](int y, int x) -> char
-               {
-                  // this gets executed to see what character should go in what
-                  // location
-                  return game.get_rank(y, x, gameData.playerType);
-               });
-         // check to see if the blue player has won or if blue has quit the game
-         // if not get the red players move 
-         // update the board
-        	}
+         	// this should be replaced with draw_board(gui, game, gameData) once
+         	// i'm confident that works correctly
+         	gui.refresh_board(
+         	      [&](int y, int x) -> bool
+         	      {
+         	         // this gets executed to test whether a location is empty
+         	         return game.theres_no_piece_at(y,x);
+         	      },
+         	      [&](int y, int x) -> bool
+         	      {
+         	         // this gets executed to see if a non-empty location is red
+         	         return (game.get_space_color(y,x) == 'R') ? true : false;
+         	      },
+         	      [&](int y, int x) -> char
+         	      {
+         	         // this gets executed to see what character should go in what
+         	         // location
+         	         return game.get_rank(y, x, gameData.playerType);
+         	      });
+        		}
 
-         // if either player has won exit loop
-      }
+      	}//exit if turn
 		}  // exit game play loop
-      won(whowon);  //  send who won the game to the end of game function
    }  // exit game session loop
    
    
@@ -318,14 +295,5 @@ whowon=false;
    return 0;
 }
 
-/**********************************************************************************************
-*                       finction implementations
-**********************************************************************************************/
-
-void won(bool whoWon)
-{
-   if (whoWon) cout<<"Red won!\n";
-   else cout<<"Blue won!\n";
-}
 
 
