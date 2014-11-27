@@ -162,10 +162,6 @@ bool action = false;
 		positions[i] = rpositions[i];
 		opponentBoard[i] = ropponentBoard[i];
 	}
-	exit_gui_quietly();
-	cout << positions << endl;
-	cout << opponentBoard << endl;
-	stop = true;
 /**********************************************************************************************
 *                       enter game session
 **********************************************************************************************/
