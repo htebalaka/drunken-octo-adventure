@@ -2,10 +2,16 @@
 #include <string>
 #include <cstdio>
 #include <vector>
+#include <iostream>
 
 #include "../headers/Zenity.h"
 
 using namespace std;
+
+void Zenity::zout(string message)
+{
+   getCmdOutput("zenity --info --text \"" + message + "\"");
+}
 
 // prompts the user for text, where the default is /def/, the prompt message
 // states /text/, and the title for the message box is /title/
@@ -17,6 +23,21 @@ string Zenity::getUserText(string title, string text, string def)
             "--height=240 --width=360 "
             "--text=\"" + text + "\" "
             "--entry-text=\"" + def + "\"");
+}
+// same as above, but optionally falls back to cout
+string Zenity::getUserText(string title, string text, string def, bool useZenity)
+{
+   if (useZenity)
+   {
+      return getUserText(title, text, def);
+   }
+   else
+   {
+      string in;
+      std::cout << text;
+      std::cin >> in;
+      return in;
+   }
 }
 
 // prompts the user to select an entry in a table with the given title and
@@ -46,14 +67,40 @@ string Zenity::getTableEntry(string title, string text, vector<string> columns, 
 
 // prompts the user with a yes or no question, with the given /title/, /text/,
 // and /yes/ or /no/ buttons.
-string Zenity::getAnswer(string title, string text, string ok, string no)
+bool Zenity::getAnswer(string title, string text, string ok, string no)
 {
     return getCmdOutput(
             "zenity --question "
             "--title=\"" + title + "\" "
             "--text=\"" + text + "\" "
             "--ok-label=\"" + ok + "\" "
-            "--cancel-label=\"" + no + "\" ");
+            "--cancel-label=\"" + no + "\" ") == ok;
+}
+// same as above, but optionally reads from standard input
+bool Zenity::getAnswer(string title, string text, string ok, string no, bool useZenity)
+{
+   if (useZenity)
+   {
+      return getAnswer(title, text, ok, no);
+   }
+   else
+   {
+      std::cout << text << "(Y/N)?" << std::endl;
+      string answer;
+      cin >> answer;
+      if (answer=="Y")
+      {
+         return true;
+      }
+      else if (answer=="F")
+      {
+         return false;
+      }
+      else
+      {
+         return Zenity::getAnswer(title, text, ok, no, useZenity);
+      }
+   }
 }
 
 // runs the specified command, capturing the ouput it produces and returning
