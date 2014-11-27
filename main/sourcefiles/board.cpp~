@@ -206,7 +206,6 @@ void board::strike(piece * &attacker,piece * &defender,bool &won)
             remove_piece(attacker);
       break;
 
- 
 
       case 'B':
            if(attacker->rank=='8')
