@@ -149,19 +149,13 @@ bool action = false;
          gui.wait_for_player(
                [&](int y, int x) -> bool
                {
-                  // this gets executed to check whether we can pickup a piece 
-						bool pickup = game.can_pickup(y, x, gameData.playerType);
-							char spaceColor = game.get_space_color(y,x);
-						if(spaceColor == gameData.playerType){
-							exit_gui_loudly(to_string(x) + " is x, " + to_string(y) + " is y.... TRUE" + spaceColor + " = " + gameData.playerType);
-						}else{
-							exit_gui_loudly(to_string(x) + " is x, " + to_string(y) + " is y...FASLE" + spaceColor + " = " + gameData.playerType);
-						}        
-                  return (spaceColor == gameData.playerType);
+                  // this gets executed to check whether we can pickup a piece     
+                  return (game.get_space_color(y,x) == gameData.playerType);
                },
                [&](int toY, int toX, int fromY, int fromX) -> bool
                {
                   // this gets executed to check whether we can move a piece
+						exit_gui_loudly(to_string(toY) + "," + to_string(toX) + "," + to_string(fromY) + "," + to_string(fromX));
                   return (game.is_valid(toY, toX, fromY, fromX));
                },
                [&](int toY, int toX, int fromY, int fromX) -> void
