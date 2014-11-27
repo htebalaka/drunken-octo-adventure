@@ -12,6 +12,7 @@
 #include "../headers/BoardGUI.h"
 #include "../headers/GUI_Globals.h"
 #include "../headers/BoardGUI_hof.h"
+#include "../headers/Zenity.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -25,23 +26,65 @@ using namespace BoardGUI_hof;
 /**********************************************************************************************
 *                       function prototypes
 **********************************************************************************************/
+void cout_board(board& game, game_Info& gameData)
+{
+   string no_piece, get_color, get_rank;
+   no_piece = "theres_no_piece_at\n";
+   get_color = "get_space_color\n";
+   get_rank = "get_rank\n";
+
+   for (int i=0; i<100; ++i)
+   {
+      int y = i / 10;
+      int x = i % 10;
+
+      no_piece += to_string(game.theres_no_piece_at(y,x));
+
+      if (game.get_space_color(y,x)=='R')
+      {   get_color += "R"; }
+      else if (game.get_space_color(y,x)=='B')
+      {   get_color += "B";}
+      else if (game.get_space_color(y,x)=='E')
+      {   get_color += "E";}
+      else
+      {  get_color += "?"; }
+      
+      get_rank += to_string(game.get_rank(y,x,gameData.playerType));
+      if ((i+1)%10==0)
+      {
+         no_piece += "\n";
+         get_color += "\n";
+         get_rank += "\n";
+      }
+   }
+   no_piece += "\n";
+   get_color += "\n";
+   get_rank += "\n";
+
+   Zenity::getAnswer("cout_board", no_piece+get_color+get_rank,"yes","no");
+}
+// intergrates the GUI and game logic to draw the currently up to date board
 void draw_board(BoardGUI& gui, board& game, game_Info& gameData)
 {
+
    gui.refresh_board(
          [&](int y, int x) -> bool
          {
          // this gets executed to test whether a location is empty
+         //return false;
          return game.theres_no_piece_at(y,x);
          },
          [&](int y, int x) -> bool
          {
          // this gets executed to see if a non-empty location is red
+         //return false;
          return (game.get_space_color(y,x) == 'R') ? true : false;
          },
          [&](int y, int x) -> char
          {
          // this gets executed to see what character should go in what
          // location
+         //return (char)(((int)'0')+x);
          return game.get_rank(y, x, gameData.playerType);
          });
 }
@@ -133,6 +176,16 @@ bool action = false;
       //  place the pieces on the board
 
       draw_board(gui, game, gameData);
+      using namespace Zenity;
+      
+      cout_board(game, gameData);
+      /*getAnswer("title","are you?","yah huh", "no way");
+      getUserText("title","give me!","no");
+      getTableEntry("title", "pick one",
+            {"these","those"},
+            {{"TRUE", "\"hi\""},
+            {"FALSE", "\"bye\""}});*/
+
 /**********************************************************************************************
 *                          main game loop
 *         pre-condition: A player has created a game and a challenger has joined the game
