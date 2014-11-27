@@ -25,6 +25,26 @@ using namespace BoardGUI_hof;
 /**********************************************************************************************
 *                       function prototypes
 **********************************************************************************************/
+void draw_board(BoardGUI& gui, board& game, game_Info& gameData)
+{
+   gui.refresh_board(
+         [&](int y, int x) -> bool
+         {
+         // this gets executed to test whether a location is empty
+         return game.theres_no_piece_at(y,x);
+         },
+         [&](int y, int x) -> bool
+         {
+         // this gets executed to see if a non-empty location is red
+         return (game.get_space_color(y,x) == 'R') ? true : false;
+         },
+         [&](int y, int x) -> char
+         {
+         // this gets executed to see what character should go in what
+         // location
+         return game.get_rank(y, x, gameData.playerType);
+         });
+}
 
 void won(bool whoWon);
 
@@ -111,6 +131,7 @@ bool action = false;
       //  place the pieces into the players piece arrays
       //  place the pieces on the board
 
+      draw_board(gui, game, gameData);
 /**********************************************************************************************
 *                          main game loop
 *         pre-condition: A player has created a game and a challenger has joined the game
@@ -126,14 +147,20 @@ bool action = false;
       row=column=newRow=newColumn=0;  // initialize coordinate variables to 0
       whowon=true;  // indicator to tell who won the game 0 for blue  1 for red
 
+      // refresh the board so both players can see that the opponent has placed
+      // their pieces. this code is pretty much just copy/pasted from the main
+      // game loop below, and should be refactored a little
+      //
+
+
       if (!quit){
          // all in game functions and proper game play logic in here
 
-/**********************************************************************************************
-*                       begin play
-*                  player who creates the game is blue and gets to go first
-**********************************************************************************************/
-        
+         /**********************************************************************************************
+          *                       begin play
+          *                  player who creates the game is blue and gets to go first
+          **********************************************************************************************/
+
 
          if (winner){  //  check to see if the blue player has won or if red has quit the game 
             quit=true; 
@@ -155,7 +182,7 @@ bool action = false;
                [&](int toY, int toX, int fromY, int fromX) -> bool
                {
                   // this gets executed to check whether we can move a piece
-						exit_gui_loudly(to_string(toY) + "," + to_string(toX) + "," + to_string(fromY) + "," + to_string(fromX));
+						// exit_gui_loudly(to_string(toY) + "," + to_string(toX) + "," + to_string(fromY) + "," + to_string(fromX));
                   return (game.is_valid(toY, toX, fromY, fromX));
                },
                [&](int toY, int toX, int fromY, int fromX) -> void
@@ -199,6 +226,8 @@ bool action = false;
 			moves >> fromX;
 			game.make_move(toY, toX, fromY, fromX);
 
+         // this should be replaced with draw_board(gui, game, gameData) once
+         // i'm confident that works correctly
          gui.refresh_board(
                [&](int y, int x) -> bool
                {

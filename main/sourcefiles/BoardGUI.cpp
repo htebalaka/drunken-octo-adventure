@@ -323,9 +323,9 @@ bool BoardGUI::move_piece(
    // make 'picked up' piece blink
    int origY = cursorY;
    int origX = cursorX;
-   b_blink(origY, origX, true);
    // make 'picked up' piece move with cursor
    chtype topCh = b_inch(cursorY, cursorX);
+   b_blink(origY, origX, true);
    chtype bottomCh = b_inch(cursorY, cursorX);
 
    chtype ch;
