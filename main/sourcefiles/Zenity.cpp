@@ -34,7 +34,7 @@ string Zenity::getUserText(string title, string text, string def, bool useZenity
    else
    {
       string in;
-      std::cout << text << std::endl;
+      std::cout << text << " ";
       std::cin >> in;
       return in;
    }
@@ -127,7 +127,7 @@ bool Zenity::getAnswer(string title, string text, string ok, string no, bool use
    }
    else
    {
-      std::cout << text << " (Y/N)?" << std::endl;
+      std::cout << text << " (Y/N)? ";
       string answer;
       cin >> answer;
       if (answer=="Y")
