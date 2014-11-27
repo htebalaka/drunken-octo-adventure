@@ -333,9 +333,4 @@ char board::get_rank(int row,int column,char color)
 *                               
 ******************************************************************************************/
 
-char board::get_space_color(int row, int column)
-{
-   return space[row][column]->color;
-}
-
 
