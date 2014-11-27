@@ -193,7 +193,7 @@ void board::strike(piece * &attacker,piece * &defender,bool &won)
       case '6':
       case '7':
       case 'S':
-      case '9':
+      case '8':
          if(defender->rank>attacker->rank){
             remove_piece(defender);
             swap(defender,attacker);
@@ -206,8 +206,8 @@ void board::strike(piece * &attacker,piece * &defender,bool &won)
             remove_piece(attacker);
       break;
 
-      case '8':
-         if ((attacker->rank=='8')&&(defender->rank=='1')){
+      case '9':
+         if ((attacker->rank=='9')&&(defender->rank=='1')){
             remove_piece(defender);
             swap(attacker,defender);
          }

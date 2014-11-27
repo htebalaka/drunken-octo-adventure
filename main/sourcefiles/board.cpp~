@@ -224,8 +224,9 @@ void board::strike(piece * &attacker,piece * &defender,bool &won)
       break;
 
       case 'F':
-         winner(attacker->color);
+         
          swap(attacker,defender);
+         winner(attacker->color,won);
       break;
       default:
          return;
