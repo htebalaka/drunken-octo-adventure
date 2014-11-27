@@ -65,6 +65,47 @@ string Zenity::getTableEntry(string title, string text, vector<string> columns, 
             + columnconcat + " " + entriesconcat);
 }
 
+int chooseLabel(string title, string text, string column, vector<string> columnEntries, bool useZenity)
+{
+   if (useZenity)
+   {
+      std::vector< std::vector<string> > table;
+      for (auto i : columnEntries)
+      {
+         table.push_back({"FALSE", "\""+i+"\""});
+      }
+      table[0][0] = "TRUE";
+      string select = Zenity::getTableEntry(title, text, {"Select", column}, table);
+      for (int i=0; i<columnEntries.size(); ++i)
+      {
+         if ("\""+columnEntries[i]+"\"\n" == select)
+         {
+            return i;
+         }
+      }
+   }
+   else
+   {
+      std::cout << text << std::endl;
+      for (int i = 0; i < columnEntries.size(); ++i)
+      {
+         std::cout << i << ": " << columnEntries[i] << std::endl;
+      }
+      int userInput;
+      while (1)
+      {
+         if (std::cin >> userInput)
+         {
+            if (0 <= userInput and userInput < columnEntries.size())
+            {
+               return userInput;
+            }
+         }
+         std::cout << "Invalid input" << std::endl;
+      }
+   }
+}
+
 // prompts the user with a yes or no question, with the given /title/, /text/,
 // and /yes/ or /no/ buttons.
 bool Zenity::getAnswer(string title, string text, string ok, string no)
