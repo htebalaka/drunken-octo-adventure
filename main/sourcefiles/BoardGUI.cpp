@@ -226,6 +226,14 @@ vector< vector<char> > BoardGUI::new_game(bool isBottomPlayer)
     vector< vector<chtype> > startRegion (4, vector<chtype> (10, ' '));
     vector<chtype> pieces {'B','B','B','B','B','B','F','S','9','9','9','9','9','9','9','9','8','8','8','8','8','7','7','7','7','6','6','6','6','5','5','5','5','4','4','4','3','3','2','1'};
 
+    /* THIS IS TO SPEED UP TESTING, REMOVE LATER */
+    for (int i=0; i<40; ++i)
+    {
+       startRegion[i / 10][i % 10] = pieces[i];
+    }
+    /* THIS IS TO SPEED UP TESTING, REMOVE LATER */
+
+    /* THIS IS TO SPEED UP TESTING, REMOVE LATER
     // set the cursor into the valid region
     cursorX = 5;
     cursorY = isBottomPlayer ? 7 : 2;
@@ -290,6 +298,7 @@ vector< vector<char> > BoardGUI::new_game(bool isBottomPlayer)
    }
 
    // convert the vector of chtypes to a vector of chars and return
+   */
    vector< vector<char> > rvalue (4, vector<char> (10, ' '));
    for (int i=0; i<4; ++i)
    {
