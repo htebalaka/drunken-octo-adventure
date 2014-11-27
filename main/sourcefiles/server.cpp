@@ -74,11 +74,13 @@ game_Info client_Connect(){
 		if ((sockfd = socket(p->ai_family, p->ai_socktype,
 				p->ai_protocol)) == -1) {
 			perror("client: socket");
+			exit(EXIT_FAILURE);
 			continue;
 		}
 		if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
 			close(sockfd);
 			perror("client: connect");
+			exit(EXIT_FAILURE);
 			continue;
 		}
 		break;
@@ -329,8 +331,8 @@ game_Info get_Game(){
 	int dGame;
 	if(numGames > 0){
 		cout << "Availible Games:\n";
-		cout << "Games:" << numGames-1 << endl;
-		for(int i=0;i < (numGames-1);i++){//display list of games to user
+		cout << "Games:" << numGames << endl;
+		for(int i=0;i < (numGames);i++){//display list of games to user
 			cout << i << " : " << games[i].name << endl;
 		}
 		cout << "Enter Game: ";//require user to enter desired game number
