@@ -154,6 +154,7 @@ bool action = false;
 	auto starting_board = gui.new_game(isBottomPlayer);
 	string rpositions = "";
 	string ropponentBoard = "";
+	Zenity::zout("Set your Players!");
 	BoardGUI_hof::flattenVec(starting_board, isBottomPlayer, rpositions);
 	sync_Board(rpositions,gameData, ropponentBoard);
 	char positions[40];
