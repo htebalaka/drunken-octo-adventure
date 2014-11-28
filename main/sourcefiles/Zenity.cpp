@@ -65,7 +65,7 @@ string Zenity::getTableEntry(string title, string text, vector<string> columns, 
             + columnconcat + " " + entriesconcat);
 }
 
-int chooseLabel(string title, string text, string column, vector<string> columnEntries, bool useZenity)
+int Zenity::chooseLabel(string title, string text, string column, vector<string> columnEntries, bool useZenity)
 {
    if (useZenity)
    {
@@ -76,13 +76,17 @@ int chooseLabel(string title, string text, string column, vector<string> columnE
       }
       table[0][0] = "TRUE";
       string select = Zenity::getTableEntry(title, text, {"Select", column}, table);
+      std::cout << "test1 " << select;
       for (int i=0; i<columnEntries.size(); ++i)
       {
-         if ("\""+columnEntries[i]+"\"\n" == select)
+         std::cout << columnEntries[i] << std::endl;
+         if (columnEntries[i]+"\n" == select)
          {
+            std::cout << "test2 " << i << std::endl;
             return i;
          }
       }
+      return -1;
    }
    else
    {

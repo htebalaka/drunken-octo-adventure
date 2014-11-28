@@ -24,7 +24,7 @@ namespace Zenity
          std::string title,
          std::string text,
          std::string column,
-         std::vector< std::string > columnEntries,
+         std::vector<std::string> columnEntries,
          bool useZenity);
 
    bool getAnswer(std::string, std::string, std::string, std::string);
