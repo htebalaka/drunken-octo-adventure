@@ -279,7 +279,7 @@ int wait_Game(game_Info &gameData, bool reload){
 			char opponent[MAXDATASIZE];
 			recv(new_fd, opponent, MAXDATASIZE,0);
          string opponentString = opponent;
-         action = Zenity::getAnswer("", "Accept game request from" + opponentString + "?", "Yes", "No", useZenity) ? 'Y' : 'N';
+         action = Zenity::getAnswer("", "Accept game request from " + opponentString + "?", "Yes", "No", useZenity) ? 'Y' : 'N';
          /*
 			cout << "Accept Game request from: " << opponent << "? (Y,N)\n";
 			cin >> action;
