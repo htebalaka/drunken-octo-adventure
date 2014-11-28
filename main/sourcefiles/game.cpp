@@ -86,8 +86,6 @@ void draw_board(BoardGUI& gui, board& game, game_Info& gameData)
          });
 }
 
-void won(bool whoWon);
-
 int main()
 {
 bool stop = false;
@@ -144,6 +142,14 @@ bool action = false;
 	cout << "---------- " << gameData.name << " ---------------\n";
 	cout << "Username: " << gameData.userName << endl;
 	cout << "Opponent: " << gameData.opponent << endl;
+
+/**********************************************************************************************
+*                       enter game session
+**********************************************************************************************/
+        // while the players want to play maintain a connection
+/**********************************************************************************************
+*                      create a new game
+**********************************************************************************************/
 	using namespace GUI_Globals;
 	init_gui();
 	BoardGUI gui = smart_init_board();
@@ -152,120 +158,73 @@ bool action = false;
 	auto starting_board = gui.new_game(isBottomPlayer);
 	string rpositions = "";
 	string ropponentBoard = "";
-	BoardGUI_hof::flattenVec(starting_board, isBottomPlayer, rpositions);
+	BoardGUI_hof::flattenVec(starting_board, isBottomPlayer, rpositions);//set your pieces
 	sync_Board(rpositions,gameData, ropponentBoard);
-	char positions[40];
-	char opponentBoard[40];
+	char positions[40];//your pieces
+	char opponentBoard[40];//opponents pieces
 	for(int i =0;i<=40;i++){
 		positions[i] = rpositions[i];
 		opponentBoard[i] = ropponentBoard[i];
-	}
+	}  
+	board game;//game board
+  	game.set_up(gameData.playerType, positions);//setup your pieces on the board
+	game.set_up(((gameData.playerType == 'R') ? 'B' : 'R'), opponentBoard);//set opponents pieces on the board
+   draw_board(gui, game, gameData);
+   using namespace Zenity;
 /**********************************************************************************************
-*                       enter game session
+*                       begin play
+*                  player who creates the game is blue and gets to go first
 **********************************************************************************************/
-        // while the players want to play maintain a connection
-/**********************************************************************************************
-*                      create a new game
-**********************************************************************************************/
-
-      board game;
-	  	game.set_up(gameData.playerType, positions);
-		game.set_up(((gameData.playerType == 'R') ? 'B' : 'R'), opponentBoard);
-		 // create a board object which the game is played on
-      bool whowon;// a boolian variabe to indicate who has won 0 for red 1 for blue
-      //  get player positions
-      //  place the pieces into the players piece arrays
-      //  place the pieces on the board
-
-      draw_board(gui, game, gameData);
-      using namespace Zenity;
-      
-
-/**********************************************************************************************
-*                          main game loop
-*         pre-condition: A player has created a game and a challenger has joined the game
-*   post-condition: A player has won the game or either player has quit or susspended the game
-**********************************************************************************************/
-
-/**********************************************************************************************
-*                       declare variables for game play
-**********************************************************************************************/
-
-      bool quit=false;  // a flag to control game play loop
-      int row,column,newRow,newColumn;  // variables to pass coordinates to board object
-      row=column=newRow=newColumn=0;  // initialize coordinate variables to 0
-      if (!quit){
-         // all in game functions and proper game play logic in here
-
-         /**********************************************************************************************
-          *                       begin play
-          *                  player who creates the game is blue and gets to go first
-          **********************************************************************************************/
-
-			while (!stop){//while no winner
-			draw_board(gui, game, gameData);
-			if(turn == true){
+	while (!stop){//while no winner
+		draw_board(gui, game, gameData);
+		if(turn == true){//its your turn, make a move
 			Zenity::zout("Its Your Turn!");
-         gui.wait_for_player(
-               [&](int y, int x) -> bool
-               {
-                  // this gets executed to check whether we can pickup a piece     
-                  return game.can_pickup(y, x, gameData.playerType);
-               },
-               [&](int toY, int toX, int fromY, int fromX) -> bool
-               {
-                  // this gets executed to check whether we can move a piece
-                  return (game.is_valid(toY, toX, fromY, fromX));
-               },
-               [&](int toY, int toX, int fromY, int fromX) -> void
-               {
-                  // this gets executed when we make a move
-						std::string moveData;
-						moveData += to_string(toY);
-						moveData += ' ';
-						moveData += to_string(toX);
-						moveData += ' ';
-						moveData += to_string(fromY);
-						moveData += ' ';
-						moveData += to_string(fromX);
-						if(send_Move(moveData,gameData,turn)){
-						
-                  	game.make_move(toY, toX, fromY, fromX, stop);
-						}else{
-							quit = true;
-							exit_gui_loudly("IT WASNT YOUR MOVE!!!\n");
-
-			
-						}
-               });
-         // this function gets called to give control to the player across the
-         // network
-
-
+        	gui.wait_for_player(
+            [&](int y, int x) -> bool
+            {
+               // this gets executed to check whether we can pickup a piece     
+               return game.can_pickup(y, x, gameData.playerType);
+            },
+            [&](int toY, int toX, int fromY, int fromX) -> bool
+            {
+               // this gets executed to check whether we can move a piece
+               return (game.is_valid(toY, toX, fromY, fromX));
+            },
+            [&](int toY, int toX, int fromY, int fromX) -> void
+            {
+               // this gets executed when we make a move
+	   			std::string moveData;
+					moveData += to_string(toY);
+					moveData += ' ';
+					moveData += to_string(toX);
+					moveData += ' ';
+					moveData += to_string(fromY);
+					moveData += ' ';
+					moveData += to_string(fromX);
+					if(send_Move(moveData,gameData,turn)){//if you were allowed to move, and it sent, then update		
+                  game.make_move(toY, toX, fromY, fromX, stop);
+					}else{
+						stop = true;
+						exit_gui_loudly("IT WASNT YOUR MOVE!!!\n");		
+					}
+             }
+				);
 			//wait for other player move here
-			}else if(turn == false){
-				std::string otherPlayerMove = get_Move(gameData, turn);	
-				istringstream moves(otherPlayerMove);	
-				int toY;
-				int toX;
-				int fromY;
-				int fromX;
-				moves >> toY;
-				moves >> toX;
-				moves >> fromY;
-				moves >> fromX;
-				game.make_move(toY, toX, fromY, fromX, stop);
+		}else if(turn == false){
+			std::string otherPlayerMove = get_Move(gameData, turn);	
+			istringstream moves(otherPlayerMove);	
+			int toY;
+			int toX;
+			int fromY;
+			int fromX;
+			moves >> toY;
+			moves >> toX;
+			moves >> fromY;
+			moves >> fromX;
+			game.make_move(toY, toX, fromY, fromX, stop);
+      }
 
-         	// this should be replaced with draw_board(gui, game, gameData) once
-         	// i'm confident that works correctly
-
-            draw_board(gui, game, gameData);
-        		}
-
-      	}//exit if turn
-		}  // exit game play loop
-   
-   
+   }//stop loop   
 /**********************************************************************************************
 *                         enter shut down procedures                      
 **********************************************************************************************/
