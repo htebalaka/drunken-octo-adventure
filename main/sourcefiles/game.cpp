@@ -71,20 +71,17 @@ void draw_board(BoardGUI& gui, board& game, game_Info& gameData)
          [&](int y, int x) -> bool
          {
          // this gets executed to test whether a location is empty
-         //return false;
          return !game.theres_no_piece_at(y,x);
          },
          [&](int y, int x) -> bool
          {
          // this gets executed to see if a non-empty location is red
-         //return false;
          return (game.get_space_color(y,x) == 'R') ? true : false;
          },
          [&](int y, int x) -> char
          {
          // this gets executed to see what character should go in what
          // location
-         //return (char)(((int)'0')+x);
          return game.get_rank(y, x, gameData.playerType);
          });
 }
@@ -213,18 +210,15 @@ bool action = false;
                [&](int y, int x) -> bool
                {
                   // this gets executed to check whether we can pickup a piece     
-                  return (game.get_space_color(y,x) == gameData.playerType);
+                  return game.can_pickup(y, x, gameData.playerType);
                },
                [&](int toY, int toX, int fromY, int fromX) -> bool
                {
                   // this gets executed to check whether we can move a piece
-						// exit_gui_loudly(to_string(toY) + "," + to_string(toX) + "," + to_string(fromY) + "," + 						to_string(fromX));
-					
                   return (game.is_valid(toY, toX, fromY, fromX));
                },
                [&](int toY, int toX, int fromY, int fromX) -> void
                {
-                  
                   // this gets executed when we make a move
 						std::string moveData;
 						moveData += to_string(toY);
@@ -264,23 +258,8 @@ bool action = false;
 
          	// this should be replaced with draw_board(gui, game, gameData) once
          	// i'm confident that works correctly
-         	gui.refresh_board(
-         	      [&](int y, int x) -> bool
-         	      {
-         	         // this gets executed to test whether a location is empty
-         	         return game.theres_no_piece_at(y,x);
-         	      },
-         	      [&](int y, int x) -> bool
-         	      {
-         	         // this gets executed to see if a non-empty location is red
-         	         return (game.get_space_color(y,x) == 'R') ? true : false;
-         	      },
-         	      [&](int y, int x) -> char
-         	      {
-         	         // this gets executed to see what character should go in what
-         	         // location
-         	         return game.get_rank(y, x, gameData.playerType);
-         	      });
+
+            draw_board(gui, game, gameData);
         		}
 
       	}//exit if turn
