@@ -336,6 +336,24 @@ game_Info get_Game(){
 	gamefile.close();
 	int dGame;
 	if(numGames > 0){
+      std::vector<std::string> gameVector;
+      for (int i=0; i<numGames; ++i)
+      {
+         gameVector.push_back(games[i].name);
+      }
+      int dGame = Zenity::chooseLabel(
+            "Select a game",
+            "Choose the game you wish to join:",
+            "Choices",
+            gameVector,
+            useZenity);
+      if (dGame==-1)
+      {
+         exit(EXIT_FAILURE);
+      }
+   }
+
+      /*
 		cout << "Availible Games:\n";
 		cout << "Games:" << numGames << endl;
 		for(int i=0;i < (numGames);i++){//display list of games to user
@@ -352,7 +370,7 @@ game_Info get_Game(){
 	}else{
 		cout << "**ERROR No Games Availible!\n";
 		exit(EXIT_FAILURE);
-	}
+	}*/
 	return games[dGame];
 }
 /**********************************************************************************************
