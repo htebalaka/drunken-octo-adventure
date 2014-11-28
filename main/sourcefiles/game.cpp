@@ -18,6 +18,7 @@
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 
 using namespace std;
 using namespace GUI_Globals;
@@ -105,12 +106,18 @@ game_Info gameData;//All relevent game data stored here.
 
 bool action = false;
 	do{
-		string name;
-		cout << "1 - Create New Game\n";
-		cout << "2 - Join Existing Game\n";
-		cout << "Enter Command: ";
-		int command;
-		cin >> command;
+      int command = Zenity::chooseLabel(
+            "Stratego!",
+            "",
+            "Choices",
+            {"Create a new game","Join existing game"},
+            true)+1;
+		//string name;
+		//cout << "1 - Create New Game\n";
+		//cout << "2 - Join Existing Game\n";
+		//cout << "Enter Command: ";
+		//int command;
+		//cin >> command;
 		switch(command){
 			case 1:
 				gameData = host_Connect();
