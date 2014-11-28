@@ -180,15 +180,6 @@ game_Info host_Connect(){
 
    string userName = Zenity::getUserText("", "Please enter a user name:", "", useZenity);
    string name = Zenity::getUserText("", "Please enter a name for your game:", "", useZenity);
-
-   /*
-   cout << "Please Enter a Username:\n";
-   string userName;
-   cin >> userName;
-	cout << "Please Enter a Name for your Game:\n";
-	string name;
-	cin >> name;
-   */
    char hostname[128];
    gethostname(hostname, 127);
    game_Info gameData = create_Game(port,hostname,name, userName); 
@@ -280,10 +271,6 @@ int wait_Game(game_Info &gameData, bool reload){
 			recv(new_fd, opponent, MAXDATASIZE,0);
          string opponentString = opponent;
          action = Zenity::getAnswer("", "Accept game request from" + opponentString + "?", "Yes", "No", useZenity) ? 'Y' : 'N';
-         /*
-			cout << "Accept Game request from: " << opponent << "? (Y,N)\n";
-			cin >> action;
-         */
 			bool trip = false;
 			do{
 				switch (action){
