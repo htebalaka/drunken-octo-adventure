@@ -270,7 +270,12 @@ int wait_Game(game_Info &gameData, bool reload){
 			char opponent[MAXDATASIZE];
 			recv(new_fd, opponent, MAXDATASIZE,0);
          string opponentString = opponent;
-         action = Zenity::getAnswer("", "Accept game request from" + opponentString + "?", "Yes", "No", useZenity) ? 'Y' : 'N';
+
+         action = Zenity::getAnswer("", "Accept game request from " + opponentString + "?", "Yes", "No", useZenity) ? 'Y' : 'N';
+         /*
+			cout << "Accept Game request from: " << opponent << "? (Y,N)\n";
+			cin >> action;
+         */
 			bool trip = false;
 			do{
 				switch (action){
@@ -336,24 +341,27 @@ game_Info get_Game(){
 	gamefile.close();
 	int dGame;
 	if(numGames > 0){
+
       std::vector<std::string> gameVector;
-      for (int i=0; i<numGames; ++i)
+      for (int i=0; i<numGames; i++)
       {
          gameVector.push_back(games[i].name);
       }
-      int dGame = Zenity::chooseLabel(
+	
+      dGame = Zenity::chooseLabel(
             "Select a game",
             "Choose the game you wish to join:",
             "Choices",
             gameVector,
             useZenity);
+			cout << "dgame is:" << dGame << "nosapce";
+				
       if (dGame==-1)
       {
          exit(EXIT_FAILURE);
       }
-   }
-
-      /*
+   
+/*
 		cout << "Availible Games:\n";
 		cout << "Games:" << numGames << endl;
 		for(int i=0;i < (numGames);i++){//display list of games to user
@@ -365,12 +373,13 @@ game_Info get_Game(){
 			cin >> dGame;
 			if((dGame < 0) || (dGame > (numGames-1))){//make sure selection is valid
 				cout << "**ERROR Invalid Game Selection!\nPlease Enter Game: ";
-			}
+			}cd 
 		}while((dGame < 0) || (dGame > (numGames-1)));
+*/
 	}else{
 		cout << "**ERROR No Games Availible!\n";
 		exit(EXIT_FAILURE);
-	}*/
+	}
 	return games[dGame];
 }
 /**********************************************************************************************

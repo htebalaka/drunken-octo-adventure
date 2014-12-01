@@ -76,9 +76,8 @@ int Zenity::chooseLabel(string title, string text, string column, vector<string>
       }
       table[0][0] = "TRUE";
       string select = Zenity::getTableEntry(title, text, {"Select", column}, table);
-      for (int i=0; i<columnEntries.size(); ++i)
+      for (int i=0; i<=columnEntries.size();i++)
       {
-         std::cout << columnEntries[i] << std::endl;
          if (columnEntries[i]+"\n" == select)
          {
             return i;
