@@ -112,12 +112,6 @@ bool action = false;
             "Choices",
             {"Create a new game","Join existing game"},
             true)+1;
-		//string name;
-		//cout << "1 - Create New Game\n";
-		//cout << "2 - Join Existing Game\n";
-		//cout << "Enter Command: ";
-		//int command;
-		//cin >> command;
 		switch(command){
 			case 1:
 				gameData = host_Connect();
@@ -236,6 +230,7 @@ bool action = false;
 *                         enter shut down procedures                      
 **********************************************************************************************/
    GUI_Globals::exit_gui_quietly();
+	close_Connection(gameData.sockfd);
    return 0;
 }
 

@@ -56,14 +56,7 @@ void sigchld_handler(int s)
 **********************************************************************************************/
 game_Info client_Connect(){
 	game_Info gameData;
-
    string userName = Zenity::getUserText("", "Please enter a user name:", "", useZenity);
-
-   /*
-	cout << "Please Enter a Username:\n";
-   string userName;
-   cin >> userName;
-   */
 	gameData = get_Game();
 	string sport ;
 	stringstream out;
@@ -272,10 +265,6 @@ int wait_Game(game_Info &gameData, bool reload){
          string opponentString = opponent;
 
          action = Zenity::getAnswer("", "Accept game request from " + opponentString + "?", "Yes", "No", useZenity) ? 'Y' : 'N';
-         /*
-			cout << "Accept Game request from: " << opponent << "? (Y,N)\n";
-			cin >> action;
-         */
 			bool trip = false;
 			do{
 				switch (action){
@@ -327,7 +316,7 @@ game_Info get_Game(){
 	if(gameData.is_open()){//go through file and add each game to an array of game_Info structs
 		while(!gameData.eof()){
 			getline(gameData,line);
-			if(line[0] == '4'){
+			if(line[0] == '4'){//check this is a valid game data line
 				istringstream iss(line);
 				string word;
 				iss >> games[select].port;
