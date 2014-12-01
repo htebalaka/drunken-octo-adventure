@@ -17,12 +17,16 @@ void Zenity::zout(string message)
 // states /text/, and the title for the message box is /title/
 string Zenity::getUserText(string title, string text, string def)
 {
-    return getCmdOutput(
+	string output = getCmdOutput(
             "zenity --entry "
             "--title=\"" + title + "\" "
             "--height=240 --width=360 "
             "--text=\"" + text + "\" "
             "--entry-text=\"" + def + "\"");
+	if(!output.empty() && output[output.length()-1] == '\n'){
+		output.erase(output.length()-1);
+	}
+    return output;
 }
 // same as above, but optionally falls back to cout
 string Zenity::getUserText(string title, string text, string def, bool useZenity)
