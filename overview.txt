@@ -1,0 +1,53 @@
+=======================
+FILE/DIRECTORY OVERVIEW
+=======================
+
+-- These were folders for initial exploratory development from each member.
+-- The files that they contained were eventually integrated into /main, and
+-- so are outdated at this stage. With more time they would simply be deleted.
+malcolm/
+mike/
+matt/
+
+main/
+	-- all working code is within main
+	headers/
+		-- header files go here. for descriptions of individual files
+		-- see /sourcefiles, where they are described in depth
+	sourcefiles/
+		BoardGUI.cpp
+			-- the overal GUI class for the board is implemented here
+		BoardGUI_hof.cpp
+			-- some small higher-order functions for the board are 
+			-- implemented here. these could be re-implemented in a
+			-- cleaner way now that i'm more familiar with C++ lambdas
+		GUI_Globals.cpp
+			-- some ncurses specific functions are implemented here, to
+			-- handle enabling and disabling ncurses
+		Zenity.cpp
+			-- all of the Zenity-based interfaces are implemented here,
+			-- as well as the fall-back command line interfaces when
+			-- Zenity is disabled
+		board.cpp
+			-- the logic for the stratego game rules are implemented here
+		game.cpp
+			-- game.cpp consists of the main entrypoint, which integrates
+			-- networking, game, and gui code
+		player.cpp
+			-- methods needed for individual players to interact with the
+			-- board
+		server.cpp
+			-- networking code is implemented here
+	test/
+		data/
+			-- data that is read in as part of running tests are provided here
+		results/
+			-- data that is read out as part of running tests go here
+		scripts/
+			-- scripts to run tests are here
+		sourcefiles/
+			-- testing replated .cpp files are here
+		makefile
+			-- the makefile for test functions
+	makefile
+		-- the makefile for the overall game is here
